@@ -1,9 +1,11 @@
 # F09. Перевод страниц с существующей фильтрацией
 
+> Объём изменён 2026-09-07: этот документ — подробный каталог исходного аудита. Добавление на остальные страницы перенесено в [отложенный backlog](13-pages-backlog.md). В текущей задаче проверяются только M001–M003 и N002, где RVK Filter уже подключён. Порядок волн ниже не является указанием продолжать массовое внедрение.
+
 [К плану](README.md) · [Полный реестр](page-inventory.json)
 
 Всего задач: **95**. Порядок фиксирован: номер волны, затем viewId; пилот имеет отдельный порядок.
-Статусы страниц — не начато. Номера строк относятся к снимку 2026-09-05; JSON хранит полный набор найденных обработчиков, условий, полей и ограничений загрузчика.
+Статусы остальных страниц — отложено; четыре подключённые страницы проверяются в текущей задаче. Номера строк относятся к снимку 2026-09-05; JSON хранит полный набор найденных обработчиков, условий, полей и ограничений загрузчика.
 
 **Порядок волны 8:** сначала оставшиеся задачи M из документа 09, затем задачи N из документа 10. Зависимости F02–F08 означают приёмку соответствующего пути, а не завершение всех необязательных возможностей аддона.
 
@@ -13,7 +15,7 @@
 
 ### M001. Типы деталей — `nsi_NvPartType.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] Полная production-приёмка остаётся открытой. **Действующая страница проверена 2026-09-07:** RVK, переключение режимов и серверный flag F08.2 реализованы; Gate 2 зелёный, сценарии Gate 3 выполнены. Результаты и оставшиеся условия — [отчёт](14-current-pages-verification.md).
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/nvparttype/nv-part-type-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/nvparttype/NvPartTypeListView.java).
 - Загрузчики: `nvPartTypesDl` → `ru.fgk.ws.app.nsi.entity.NvPartType`.
 - Текущие фильтры: `name` CONTAINS.
@@ -28,7 +30,7 @@
 
 ### M002. Причины отклонения — `RejectReason.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] Полная production-приёмка остаётся открытой. **Действующая страница проверена 2026-09-07:** RVK, переключение режимов и серверный flag F08.2 реализованы; Gate 2 зелёный, сценарии Gate 3 выполнены. Результаты и оставшиеся условия — [отчёт](14-current-pages-verification.md).
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/rejectreason/reject-reason-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/rejectreason/RejectReasonListView.java).
 - Загрузчики: `rejectReasonDl` → `ru.fgk.ws.app.nsi.entity.RejectReason`.
 - Текущие фильтры: `message` CONTAINS.
@@ -43,7 +45,7 @@
 
 ### M003. Депо — `nsi_VDepo.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] Полная production-приёмка остаётся открытой. **Действующая страница проверена 2026-09-07:** RVK, переключение режимов и серверный flag F08.2 реализованы; Gate 2 зелёный, сценарии Gate 3 выполнены. Результаты и оставшиеся условия — [отчёт](14-current-pages-verification.md).
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vdepo/v-depo-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vdepo/VDepoListView.java).
 - Загрузчики: `vDepoDl` → `ru.fgk.ws.app.nsi.entity.VDepo`.
 - Текущие фильтры: `id` EQUAL; `shortName` CONTAINS.
@@ -60,7 +62,7 @@
 
 ### M004. Договоры на ТР-2 с ЦДИ — `DrContractCdi.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/drcontract/view/dr-contract-cdi-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/drcontract/view/DrContractCdiListView.java).
 - Загрузчики: `drContractCdiDl` → `ru.fgk.ws.app.drcontract.entity.DrContractCdi`.
 - Текущие фильтры: `dateBegin` GREATER_OR_EQUAL; `dateEnd` LESS_OR_EQUAL; `contractNum` CONTAINS.
@@ -75,7 +77,7 @@
 
 ### M005. Пакеты ремонтов ТР-1 — `DrDiadocOperRepairTr1.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drdiadocoperrepairtr1/dr-diadoc-oper-repair-tr1-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drdiadocoperrepairtr1/DrDiadocOperRepairTr1ListView.java).
 - Загрузчики: `drDiadocOperRepairTr1sDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairTr1`.
 - Текущие фильтры: `repairDate` GREATER_OR_EQUAL; `repairDate` LESS_OR_EQUAL; `rwCode` EQUAL; `avrNumber` EQUAL; `packetId` EQUAL.
@@ -90,7 +92,7 @@
 
 ### M006. Справочник работ по замене деталей — `DrTrWork.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/drtrworkreplacement/dr-tr-work-replacement-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/drtrworkreplacement/DrTrWorkReplacementListView.java).
 - Загрузчики: `drTrWorksDl` → `ru.fgk.ws.app.nsi.entity.DrTrWorkReplacement`.
 - Текущие фильтры: `code` EQUAL; `name` CONTAINS.
@@ -105,7 +107,7 @@
 
 ### M007. Неисправности вагонов — `NsiNvDefectGroup.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/nsinvdefectgroup/nsi-nv-defect-group-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/nsinvdefectgroup/NsiNvDefectGroupListView.java).
 - Загрузчики: `nsiNvDefectGroupDl` → `ru.fgk.ws.app.nsi.entity.NsiNvDefectGroup`.
 - Текущие фильтры: `defectCode` EQUAL; `vDamageType.dmName` EQUAL; `reason` EQUAL; `node` EQUAL.
@@ -120,7 +122,7 @@
 
 ### M008. Группы деталей — `VrkDetailGroup.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/asuvrk/view/vrkdetailgroup/vrk-detail-group-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/asuvrk/view/vrkdetailgroup/VrkDetailGroupListView.java).
 - Загрузчики: `vrkDetailGroupsDl` → `ru.fgk.ws.app.asuvrk.entity.VrkDetailGroup`.
 - Текущие фильтры: `name` CONTAINS.
@@ -135,7 +137,7 @@
 
 ### M009. Прототипы деталей — `VrkDetailPrototype.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/asuvrk/view/vrkdetailprototype/vrk-detail-prototype-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/asuvrk/view/vrkdetailprototype/VrkDetailPrototypeListView.java).
 - Загрузчики: `vrkDetailPrototypesDl` → `ru.fgk.ws.app.asuvrk.entity.VrkDetailPrototype`.
 - Текущие фильтры: `id` EQUAL; `name` CONTAINS; `vrkDetailGroupInfo.name` CONTAINS.
@@ -150,7 +152,7 @@
 
 ### M010. Передача документов в ДЮ — `dt_VOperRepair.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dt/view/dtvoperrepair/v-oper-repair-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dt/view/dtvoperrepair/VOperRepairListView.java).
 - Загрузчики: `dtVOperRepairsDl` → `ru.fgk.ws.app.dt.entity.DtVOperRepair`.
 - Текущие фильтры: `psrDate` GREATER_OR_EQUAL; `psrDate` LESS_OR_EQUAL.
@@ -165,7 +167,7 @@
 
 ### M011. Словари текстовых валидаций — `nsi_NvValidationDictionary.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/nvvalidationdictionary/nv-validation-dictionary-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/nvvalidationdictionary/NvValidationDictionaryListView.java).
 - Загрузчики: `nvValidationDictionaryDl` → `ru.fgk.ws.app.nsi.entity.NvValidationDictionary`.
 - Текущие фильтры: `alias` CONTAINS.
@@ -180,7 +182,7 @@
 
 ### M012. Дороги — `nsi_VRailway.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vrailway/v-railway-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vrailway/VRailwayListView.java).
 - Загрузчики: `vRailwaysDl` → `ru.fgk.ws.app.nsi.entity.VRailway`.
 - Текущие фильтры: `rwCode` CONTAINS; `rwName` CONTAINS.
@@ -195,7 +197,7 @@
 
 ### M013. Списки деталей — `pt_PtList.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptlist/pt-list-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptlist/PtListListView.java).
 - Загрузчики: `ptListsDl` → `ru.fgk.ws.app.pt.entity.PtList`; `?` → `ru.fgk.ws.app.pt.entity.PtListItem`.
 - Текущие фильтры: `createdBy` CONTAINS; `name` CONTAINS.
@@ -210,7 +212,7 @@
 
 ### M014. Договоры на ремонт деталей — `pt_RepairContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptrepaircontract/pt-repair-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptrepaircontract/PtRepairContractListView.java).
 - Загрузчики: `ptRepairContractsDl` → `ru.fgk.ws.app.pt.entity.PtRepairContract`.
 - Текущие фильтры: `dateStart` GREATER_OR_EQUAL; `dateEndWork` LESS_OR_EQUAL; `number` CONTAINS; `vrkCode` EQUAL.
@@ -225,7 +227,7 @@
 
 ### M015. Списки ремонтов — `rp_RepairList.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/repair/view/repairlist/repair-list-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/repair/view/repairlist/RepairListListView.java).
 - Загрузчики: `repairListsDl` → `ru.fgk.ws.app.repair.entity.RepairList`.
 - Текущие фильтры: `createdBy` CONTAINS; `name` CONTAINS.
@@ -240,7 +242,7 @@
 
 ### M016. Списки вагонов — `wn_WnList.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/wnlist/wn-list-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/wnlist/WnListListView.java).
 - Загрузчики: `wnListsDl` → `ru.fgk.ws.app.wagons.entity.WnList`.
 - Текущие фильтры: `createdBy` CONTAINS; `name` CONTAINS.
@@ -257,7 +259,7 @@
 
 ### M017. Dr contract cdi work groups — `DrContractCdiWorkGroup.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/drcontractcdiworkgroup/dr-contract-cdi-work-group-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/drcontractcdiworkgroup/DrContractCdiWorkGroupListView.java).
 - Загрузчики: `drContractCdiWorkGroupsDl` → `ru.fgk.ws.app.drcontract.entity.DrContractCdiWorkGroup`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -272,7 +274,7 @@
 
 ### M018. Архив обработки ремонтов — `ImportedPacketArch.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/asuvrk/view/importedpacketarch/imported-packet-arch-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/asuvrk/view/importedpacketarch/ImportedPacketArchListView.java).
 - Загрузчики: `importedPacketArchDl` → `ru.fgk.ws.app.dr.entity.ImportedPacketArch`.
 - Текущие фильтры: `sourceType` EQUAL; `repairType` EQUAL; `wagNum` EQUAL; `actNum` EQUAL; `depo.vrkCode` EQUAL; `packCheckedCode` EQUAL; `status` EQUAL; `xmlHash` EQUAL.
@@ -287,7 +289,7 @@
 
 ### M019. Пользователи АСУ РВК — `User.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/user/user-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/user/UserListView.java).
 - Загрузчики: `usersDl` → `ru.fgk.sso.entity.User`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `username` CONTAINS.
@@ -302,7 +304,7 @@
 
 ### M020. Подразделения АО "ФГК" — `nsi_Department.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/department/department-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/department/DepartmentListView.java).
 - Загрузчики: `departmentsDl` → `ru.fgk.ws.app.nsi.entity.Department`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -317,7 +319,7 @@
 
 ### M021. Рассылка по выпуску — `nsi_NsiNoticeMail.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/noticemail/notice-mail-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/noticemail/NoticeMailListView.java).
 - Загрузчики: `noticeMailDl` → `ru.fgk.ws.app.nsi.entity.NsiNoticeMail`; `vRailwaysDl` → `ru.fgk.ws.app.nsi.entity.VRailway`.
 - Текущие фильтры: `railwayFilter` JPQL(ru.fgk.ws.app.nsi.entity.VRailway); `email` CONTAINS; `fio` CONTAINS; `activeFilter` JPQL(java.lang.Boolean); `shortFormat` EQUAL.
@@ -332,7 +334,7 @@
 
 ### M022. Страны — `nsi_VCountry.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vcountry/v-country-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vcountry/VCountryListView.java).
 - Загрузчики: `vCountriesDl` → `ru.fgk.ws.app.nsi.entity.VCountry`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -347,7 +349,7 @@
 
 ### M023. msg://VDepartmentListView.title — `nsi_VDepartment.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vdepartment/v-department-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vdepartment/VDepartmentListView.java).
 - Загрузчики: `vDepartmentsDl` → `ru.fgk.ws.app.nsi.entity.VDepartment`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -362,7 +364,7 @@
 
 ### M024. Станции — `nsi_VStation.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vstation/v-station-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vstation/VStationListView.java).
 - Загрузчики: `vStationsDl` → `ru.fgk.ws.app.nsi.entity.VStation`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -377,7 +379,7 @@
 
 ### M025. Список подрядчиков — `v_depo_contractor.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/vdepocontractor/v-depo-contractor-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/vdepocontractor/VDepoContractorListView.java).
 - Загрузчики: `vDepoContractorsDl` → `ru.fgk.ws.app.nsi.entity.VDepoContractor`.
 - Текущие фильтры: `depoRepair.shortName` CONTAINS; `depoActName` CONTAINS; `depoMhName` CONTAINS; `currentDateFilter` JPQL(java.time.LocalDate).
@@ -394,7 +396,7 @@
 
 ### M026. Договоры по ремонту вагонов — `VDrContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/drcontract/view/v-dr-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/drcontract/view/VDrContractListView.java).
 - Загрузчики: `vDrContractsDl` → `ru.fgk.ws.app.drcontract.entity.VDrContract`.
 - Текущие фильтры: `dateEndWork` GREATER_OR_EQUAL; `dateBegin` LESS_OR_EQUAL; `vrkCode` EQUAL; `repairType` EQUAL; `vDrContractDepo.depo` EQUAL; `contractNumber` CONTAINS.
@@ -409,7 +411,7 @@
 
 ### M027. Справочник предприятий — `da_ClaimDepo.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/claimdepo/claim-depo-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/claimdepo/ClaimDepoListView.java).
 - Загрузчики: `claimDepoDl` → `ru.fgk.ws.app.da.entity.ClaimDepo`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `depo.shortName` CONTAINS; `depo.vrkCode` EQUAL; `depo.railway` EQUAL.
@@ -424,7 +426,7 @@
 
 ### M028. Справочник реквизитов предприятий ремонта для заявок на ТР — `da_ClaimDepoVisa.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/claimdepovisa/claim-depo-visa-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/claimdepovisa/ClaimDepoVisaListView.java).
 - Загрузчики: `claimDepoVisasDl` → `ru.fgk.ws.app.da.entity.ClaimDepoVisa`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -439,7 +441,7 @@
 
 ### M029. Claim depo stations — `da_ClaimStation.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/claimdepostation/claim-depo-station-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/claimdepostation/ClaimDepoStationListView.java).
 - Загрузчики: `claimDepoStationsDl` → `ru.fgk.ws.app.da.entity.ClaimDepoStation`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -454,7 +456,7 @@
 
 ### M030. Агентские договоры на выполнение ТР — `da_ContractAgent.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/dacontractagent/da-contract-agent-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/dacontractagent/DaContractAgentListView.java).
 - Загрузчики: `daContractAgentsDl` → `ru.fgk.ws.app.da.entity.DaContractAgent`.
 - Текущие фильтры: `dateActionContract` JPQL(java.time.LocalDate); `contractI` JPQL(ru.fgk.ws.app.nsi.entity.VCountry).
@@ -469,7 +471,7 @@
 
 ### M031. Заявки по РФ — `da_RepairClaimRf.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/repairclaim/repair-claim-rf-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/repairclaim/RepairClaimRfListView.java).
 - Загрузчики: `repairClaimsDl` → `ru.fgk.ws.app.da.entity.RepairClaim`.
 - Текущие фильтры: `sendDate` GREATER_OR_EQUAL; `sendDate` LESS_OR_EQUAL; `dislocationRw` EQUAL; `sendStatus` EQUAL.
@@ -484,7 +486,7 @@
 
 ### M032. Остаток в ТР по СНГ — `da_VOperBalanceSng.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/voperbalancesng/v-oper-balance-sng-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/voperbalancesng/VOperBalanceSngListView.java).
 - Загрузчики: `vOperBalanceSngsDl` → `ru.fgk.ws.app.da.entity.VOperBalanceSng`; `vCountriesDl` → `ru.fgk.ws.app.nsi.entity.VCountry`.
 - Текущие фильтры: `claimDate` IS_SET; `country` IN_LIST; `wnListFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -499,7 +501,7 @@
 
 ### M033. msg://departmentsVisaListView.title — `nsi_DepartmentsVisa.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/departmentsvisa/departments-visa-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/departmentsvisa/DepartmentsVisaListView.java).
 - Загрузчики: `departmentsVisasDl` → `ru.fgk.ws.app.nsi.entity.DepartmentsVisa`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -514,7 +516,7 @@
 
 ### M034. Договоры аренды — `rs_VTabContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/rs/view/vtabcontract/v-tab-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/rs/view/vtabcontract/VTabContractListView.java).
 - Загрузчики: `vTabContractsDl` → `ru.fgk.ws.app.rs.entity.VTabContract`; `vContractorsDl` → `ru.fgk.ws.app.rs.entity.VContractor`.
 - Текущие фильтры: `contractNum` CONTAINS; `contractor` EQUAL.
@@ -531,7 +533,7 @@
 
 ### M035. История УКВ — `PtUkvArchive.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/ptukvarchive/pt-ukv-archive-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/ptukvarchive/PtUkvArchiveListView.java).
 - Загрузчики: `ptUkvArchivesDl` → `ru.fgk.ws.app.pt.entity.PtUkvArchive`.
 - Текущие фильтры: `recdatebegin` GREATER_OR_EQUAL; `recdateend` LESS_OR_EQUAL.
@@ -546,7 +548,7 @@
 
 ### M036. Ремонты — `VRepairAbdpvArch.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/repair/view/vrepairabdpvarch/v-repair-abdpv-arch-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/repair/view/vrepairabdpvarch/VRepairAbdpvArchListView.java).
 - Загрузчики: `vRepairAbdpvArchDl` → `ru.fgk.ws.app.wagons.entity.VRepairAbdpvArch`.
 - Текущие фильтры: `jpqlFilterVrk` JPQL(ru.fgk.ws.app.nsi.entity.VrkEnum); `jpqlFilterRailways` JPQL(java.lang.Integer); `jpqlFilterWnList` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `jpqlFilterRepairList` JPQL(ru.fgk.ws.app.repair.entity.RepairList).
@@ -561,7 +563,7 @@
 
 ### M037. Замена деталей по 4624 — `VRepairDetailLink.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/repair/view/vrepairabdpvarch/v-repair-detail-link-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/repair/view/vrepairabdpvarch/VRepairDetailLinkListView.java).
 - Загрузчики: `vRepairDetailLinksDl` → `ru.fgk.ws.app.repair.entity.VRepairDetailLink`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `repair.defectDate` GREATER_OR_EQUAL; `repair.defectDate` LESS_OR_EQUAL; `repair.repairDate` GREATER_OR_EQUAL; `repair.repairDate` LESS_OR_EQUAL; `removedFlag` EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -576,7 +578,7 @@
 
 ### M038. Архив реестра вагонов — `WagArchiveView`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/wagarchive/wag-archive-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/wagarchive/WagArchiveView.java).
 - Загрузчики: `vWagRegisterArchiveScreenDataDl` → `ru.fgk.ws.app.wagons.entity.VWagRegisterArchiveScreenData`.
 - Текущие фильтры: `wagnumFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `dateBegin` GREATER_OR_EQUAL; `dateBegin` LESS_OR_EQUAL; `dateOut` GREATER_OR_EQUAL; `dateOut` LESS_OR_EQUAL.
@@ -591,7 +593,7 @@
 
 ### M039. Добавить к списку — `rp_RepairLists.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/repair/view/repairlist/repair-lists-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/repair/view/repairlist/RepairListsView.java).
 - Загрузчики: `repairListsDl` → `ru.fgk.ws.app.repair.entity.RepairList`.
 - Текущие фильтры: `name` CONTAINS.
@@ -606,7 +608,7 @@
 
 ### M040. Архив комплектаций — `wn_VWagEquipmentArchive.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/vwagequipmentarchive/v-wag-equipment-archive-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/vwagequipmentarchive/VWagEquipmentArchiveListView.java).
 - Загрузчики: `vWagEquipmentArchivesDl` → `ru.fgk.ws.app.wagons.entity.VWagEquipmentArchive`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `nextEquipmentDate` GREATER_OR_EQUAL; `repairDate` LESS; `repairDate` LESS_OR_EQUAL; `jpqlFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -621,7 +623,7 @@
 
 ### M041. Таблица паспортов — `wn_VWagPassport.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagpassport/v-wag-passport-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagpassport/VWagPassportListView.java).
 - Загрузчики: `vWagPassportsDl` → `ru.fgk.ws.app.wagons.entity.VWagPassport`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `regDate` GREATER_OR_EQUAL; `regDate` LESS_OR_EQUAL; `categoryUse` EQUAL; `ownType` EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -636,7 +638,7 @@
 
 ### M042. Расчетный остаток пробега для вагонов, ремонтируемых по единичному критерию — `wn_VWagPassportCalculatedRun.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagpassport/v-wag-passport-calculated-run-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagpassport/VWagPassportCalculatedRunListView.java).
 - Загрузчики: `vWagPassportsDl` → `ru.fgk.ws.app.wagons.entity.VWagCalculatedRun`.
 - Текущие фильтры: `runRemainingFilter` JPQL(java.lang.Integer); `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -651,7 +653,7 @@
 
 ### M043. Таблица дислокации — `wn_VWagPassportDislocation.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagpassport/v-wag-passport-dislocation-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagpassport/VWagPassportDislocationListView.java).
 - Загрузчики: `vWagPassportsDl` → `ru.fgk.ws.app.wagons.entity.VWagPassport`; `wnNotesHeadsDl` → `ru.fgk.ws.app.wagons.entity.WnNotesHead`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -666,7 +668,7 @@
 
 ### M044. Добавить к списку — `wn_WnLists.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/wnlist/wn-lists-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/wnlist/WnListsView.java).
 - Загрузчики: `wnListsDl` → `ru.fgk.ws.app.wagons.entity.WnList`.
 - Текущие фильтры: `name` CONTAINS.
@@ -683,7 +685,7 @@
 
 ### M045. Экспорт документов по ТР-2 — `dr_ExportFiles.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drexportfiles/dr-export-files-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drexportfiles/DrExportFilesListView.java).
 - Загрузчики: `vOperRepairDocFlowDl` → `ru.fgk.ws.app.dr.entity.VOperRepairDocFlow`.
 - Текущие фильтры: `accountingTransferDate` GREATER_OR_EQUAL; `accountingTransferDate` LESS_OR_EQUAL; `diadocWagOperRepairContract.contractNumber` EQUAL; `repairType` EQUAL; `repairDepo.vrkCode` IN_LIST; `repairDateBeginFilter` JPQL(java.time.LocalDate); `repairDateEndFilter` JPQL(java.time.LocalDate); `repairRailway` EQUAL; `repairDepo` EQUAL; `jpqlFilterWnList` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `jpqlFilterRepairList` JPQL(ru.fgk.ws.app.repair.entity.RepairList); `diadocWagOperRepairContract.messageId` EQUAL; `warrantyRepair` EQUAL; `repairCostFilter` JPQL(java.lang.Boolean); `docStatusFilter` JPQL(java.lang.Boolean).
@@ -698,7 +700,7 @@
 
 ### M046. Экспорт документов по ТР-1 — `dr_ExportTr1Files.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drexporttr1files/dr-export-tr1-files-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drexporttr1files/DrExportTr1FilesListView.java).
 - Загрузчики: `drExportTr1FilesDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairTr1`.
 - Текущие фильтры: `avrDate` GREATER_OR_EQUAL; `avrDate` LESS_OR_EQUAL; `contractNumber` EQUAL; `depo.vrkCode` IN_LIST; `depo.railway` EQUAL.
@@ -713,7 +715,7 @@
 
 ### M047. Контроль сроков оплаты — `dr_PlanRepairControlDate.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/planrepaircontroldate/plan-repair-control-date-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/planrepaircontroldate/PlanRepairControlDateListView.java).
 - Загрузчики: `vWagPlanRepairContractsDl` → `ru.fgk.ws.app.dr.entity.VWagPlanRepairContract`.
 - Текущие фильтры: `repairDate` GREATER_OR_EQUAL; `repairDate` LESS_OR_EQUAL; `drWagPlanRepairContractUser.accountingTransferDate` GREATER_OR_EQUAL; `drWagPlanRepairContractUser.accountingTransferDate` LESS_OR_EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `vRepair.repairDepoCode.vrkCode` IN_LIST.
@@ -728,7 +730,7 @@
 
 ### M048. Экспорт документов по плановым ремонтам — `dr_PlannedExportFiles.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drplannedexportfiles/dr-planned-export-files-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drplannedexportfiles/DrPlannedExportFilestListView.java).
 - Загрузчики: `vWagPlanRepairContractsDl` → `ru.fgk.ws.app.dr.entity.VWagPlanRepairContract`.
 - Текущие фильтры: `drWagPlanRepairContractUser.accountingTransferDate` GREATER_OR_EQUAL; `drWagPlanRepairContractUser.accountingTransferDate` LESS_OR_EQUAL; `diadocWagPlanRepairContract.contractNumber` EQUAL; `vRepair.repairType62` EQUAL; `vRepair.repairDepoCode.vrkCode` IN_LIST; `repairDateBeginFilter` JPQL(java.time.LocalDate); `repairDateEndFilter` JPQL(java.time.LocalDate); `vRepair.repairDepoCode.railway` EQUAL; `vRepair.repairDepoCode` EQUAL; `jpqlFilterWnList` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `jpqlFilterRepairList` JPQL(ru.fgk.ws.app.repair.entity.RepairList); `diadocWagPlanRepairContract.messageId` EQUAL; `repairCostFilter` JPQL(java.lang.Boolean); `docStatusFilter` JPQL(java.lang.Boolean).
@@ -743,7 +745,7 @@
 
 ### M049. Технологические ремонты — `dr_TechOperRepairContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/techoperrepaircontract/tech-oper-repair-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/techoperrepaircontract/TechOperRepairContractListView.java).
 - Загрузчики: `techOperRepairContractsDl` → `ru.fgk.ws.app.dr.entity.VWagOperRepairContract`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -758,7 +760,7 @@
 
 ### M050. Оплата ТР по вагонам — `dr_VOperRepairDocFlow.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/voperrepairdocflow/v-oper-repair-doc-flow-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/voperrepairdocflow/VOperRepairDocFlowListView.java).
 - Загрузчики: `reportOperRepairDocFlowShortDl` → `ru.fgk.ws.app.dr.entity.VOperRepairDocFlow`.
 - Текущие фильтры: `reportDate` GREATER_OR_EQUAL; `reportDate` LESS_OR_EQUAL.
@@ -773,7 +775,7 @@
 
 ### M051. Оплата ТР по вагонам — `dr_VOperRepairDocFlowFull.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/voperrepairdocflow/v-oper-repair-doc-flow-full-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/voperrepairdocflow/VOperRepairDocFlowFullListView.java).
 - Загрузчики: `reportOperRepairDocFlowFullDl` → `ru.fgk.ws.app.dr.entity.VOperRepairDocFlow`.
 - Текущие фильтры: `reportDate` GREATER_OR_EQUAL; `reportDate` LESS_OR_EQUAL; `repairType` EQUAL; `defectReason` EQUAL; `warrantyRepair` EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `prCountry` EQUAL; `repairDepo.vrkCode` IN_LIST; `repairRailway` EQUAL; `repairDepo` EQUAL; `diadocWagOperRepairContract.contract` EQUAL; `stateSf` EQUAL; `stateForpay` EQUAL; `stateDoc` EQUAL; `stateChecked` EQUAL; `stateAccepted` EQUAL; `stateDbn` EQUAL; `state1c` EQUAL; `stateBad` EQUAL.
@@ -788,7 +790,7 @@
 
 ### M052. Вагоны ТР не в оплате — `dr_VOperRepairDocFlowNo.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/voperrepairdocflowno/v-oper-repair-doc-flow-no-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/voperrepairdocflowno/VOperRepairDocFlowNoListView.java).
 - Загрузчики: `vDepoDl` → `ru.fgk.ws.app.nsi.entity.VDepo`; `vRailwaysDl` → `ru.fgk.ws.app.nsi.entity.VRailway`; `vOperRepairDocFlowNoesDl` → `ru.fgk.ws.app.dr.entity.VOperRepairDocFlowNo`.
 - Текущие фильтры: `reportDate` GREATER_OR_EQUAL; `reportDate` LESS_OR_EQUAL; `repairTypeAbs` EQUAL; `defectReason` EQUAL; `warrantyRepair` EQUAL; `wagnum` EQUAL; `prCountry` EQUAL; `repairDepo.vrkCode` IN_LIST; `repairDepo.railway` EQUAL; `repairDepo` EQUAL.
@@ -803,7 +805,7 @@
 
 ### M053. Оплата ТР-1 по вагонам — `dr_VTr1RepairDocFlow.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/voperrepairdocflow/v-tr1-repair-doc-flow-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/voperrepairdocflow/VTr1RepairDocFlowListView.java).
 - Загрузчики: `reportOperRepairDocFlowFullDl` → `ru.fgk.ws.app.dr.entity.VOperRepairDocFlowWithHist`.
 - Текущие фильтры: `reportDate` GREATER_OR_EQUAL; `reportDate` LESS_OR_EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `repairDepo.vrkCode` IN_LIST; `repairRailway` EQUAL; `repairDepo` EQUAL.
@@ -818,7 +820,7 @@
 
 ### M054. Простой в ТР по вагонам — `dr_VWagOperRepairContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/vwagoperrepaircontract/v-wag-oper-repair-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/vwagoperrepaircontract/VWagOperRepairContractListView.java).
 - Загрузчики: `vWagOperRepairContractsDl` → `ru.fgk.ws.app.dr.entity.VWagOperRepairContract`.
 - Текущие фильтры: `reportDate` GREATER_OR_EQUAL; `reportDate` LESS_OR_EQUAL; `repairAbdpvArch.repairType62` EQUAL; `operRepair.subjectToClaim` EQUAL; `warrantyRepair` EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.nsi.entity.VrkEnum); `JPQL без id` JPQL(java.lang.Integer); `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `operRepair.claimNumber` EQUAL.
@@ -833,7 +835,7 @@
 
 ### M055. Список нормативов расчета неустойки — `dt_OperRepairNorms.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dt/view/dtoperrepairnorms/dt-oper-repair-norms-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dt/view/dtoperrepairnorms/DtOperRepairNormsListView.java).
 - Загрузчики: `repairNormsDl` → `ru.fgk.ws.app.dt.entity.DtOperRepairNorms`.
 - Текущие фильтры: `normActiveDateFilter` JPQL(java.time.LocalDate); `repairType` EQUAL.
@@ -850,7 +852,7 @@
 
 ### M056. Акт приемки исполненных обязательств — `DrContractOperRepairUser`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/dr-contract-oper-repair-user-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/DrContractOperRepairUserView.java).
 - Загрузчики: `vWagOperRepairContractActsDl` → `ru.fgk.ws.app.dr.entity.VWagOperRepairContractAct`.
 - Текущие фильтры: `wagnum` EQUAL.
@@ -865,7 +867,7 @@
 
 ### M057. Акт приемки исполненных обязательств — `DrContractPlanRepairUserView.detail`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/dr-contract-plan-repair-user-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/DrContractPlanRepairUserView.java).
 - Загрузчики: `vWagPlanRepairContractActsDl` → `ru.fgk.ws.app.dr.entity.VWagPlanRepairContractAct`.
 - Текущие фильтры: `wagnum` EQUAL.
@@ -880,7 +882,7 @@
 
 ### M058. Настройки обработки — `NvProcessingSettings.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/nsi/view/nvprocessingsettings/nv-processing-settings-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/nsi/view/nvprocessingsettings/NvProcessingSettingsListView.java).
 - Загрузчики: `nvProcessingSettingsDl` → `ru.fgk.ws.app.asuvrk.entity.NvProcessingSettings`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -895,7 +897,7 @@
 
 ### M059. Учет ремонта деталей — `PtRepairClaimItem.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptrepairclaimitem/pt-repair-claim-item-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptrepairclaimitem/PtRepairClaimItemListView.java).
 - Загрузчики: `ptRepairClaimItemsDl` → `ru.fgk.ws.app.pt.entity.PtRepairClaimItem`; `vRailwayDl` → `ru.fgk.ws.app.nsi.entity.VRailway`; `contractDl` → `ru.fgk.ws.app.pt.entity.PtRepairContract`; `depoDl` → `ru.fgk.ws.app.nsi.entity.VDepo`; `partTypeDl` → `ru.fgk.ws.app.nsi.entity.NvPartType`.
 - Текущие фильтры: `dateFromFilter` JPQL(java.time.LocalDate); `dateToFilter` JPQL(java.time.LocalDate); `fixDetailFactory` EQUAL; `fixDetailNumber` EQUAL; `fixDetailYear` EQUAL; `fixDetailUid` IN_LIST; `claim.depoRepair.railway` EQUAL; `partType` IN_LIST; `claim.depoRepair` EQUAL; `claim.contract` EQUAL.
@@ -910,7 +912,7 @@
 
 ### M060. Пакеты по ремонту деталей — `PtRepairPacket.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptrepairpacket/pt-repair-packet-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptrepairpacket/PtRepairPacketListView.java).
 - Загрузчики: `ptRepairPacketsDl` → `ru.fgk.ws.app.pt.entity.PtRepairPacket`; `nvPartTypesDl` → `ru.fgk.ws.app.nsi.entity.NvPartType`.
 - Текущие фильтры: `date` GREATER_OR_EQUAL; `date` LESS_OR_EQUAL; `contract` EQUAL; `depo.railway` EQUAL; `diadocStatusFilter` JPQL(java.lang.Integer); `accountingTransferFilter` JPQL(java.lang.Boolean); `id` EQUAL; `torId` EQUAL.
@@ -925,7 +927,7 @@
 
 ### M061. Очередь запросов по деталям в ЕО — `RequestInform.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/requestinform/request-inform-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/requestinform/RequestInformListView.java).
 - Загрузчики: `requestInformsDl` → `ru.fgk.ws.app.pt.entity.RequestInform`; `requestInformStatisticsDl` → `property-bound/KeyValue`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `status` IN_LIST; `detailNumber` EQUAL; `requestCode` EQUAL; `insUser` EQUAL.
@@ -940,7 +942,7 @@
 
 ### M062. Справочник работ по ремонту деталей — `VNvPartRepairWork.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/vnvpartrepairwork/v-nv-part-repair-work-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/vnvpartrepairwork/VNvPartRepairWorkListView.java).
 - Загрузчики: `vNvPartRepairWorksDl` → `ru.fgk.ws.app.pt.entity.VNvPartRepairWork`.
 - Текущие фильтры: `workCode` EQUAL; `workName` CONTAINS; `partType` EQUAL; `wsForm` EQUAL; `wsRepair` EQUAL.
@@ -955,7 +957,7 @@
 
 ### M063. Фоновая задача — `common_BackgroundJobTask.detail`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/common/view/backgroundjob/background-job-task-detail-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/common/view/backgroundjob/BackgroundJobTaskDetailView.java).
 - Загрузчики: `logsDl` → `ru.fgk.ws.app.common.entity.BackgroundJobLog`.
 - Текущие фильтры: `level` EQUAL.
@@ -970,7 +972,7 @@
 
 ### M064. Журнал рассылки по выпуску из НРП — `da_NsiMailSendLog.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/notice/nsi-mail-send-log-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/notice/NsiMailSendLogListView.java).
 - Загрузчики: `nsiMailSendLogDl` → `ru.fgk.ws.app.da.notice.entity.NsiMailSendLog`.
 - Текущие фильтры: `noticeMail.email` CONTAINS; `status` EQUAL.
@@ -985,7 +987,7 @@
 
 ### M065. Заявки на ремонт — `da_RepairClaim.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/repairclaim/repair-claim-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/repairclaim/RepairClaimListView.java).
 - Загрузчики: `repairClaimsDl` → `ru.fgk.ws.app.da.entity.RepairClaim`; `vCountriesDl` → `ru.fgk.ws.app.nsi.entity.VCountry`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `sendDateFromFilter` JPQL(java.time.LocalDate); `sendDateToFilter` JPQL(java.time.LocalDate); `country` EQUAL; `sendStatus` EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -1000,7 +1002,7 @@
 
 ### M066. Архив рассылки по выпуску из НРП — `da_RepairNoticeArchive.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/da/view/notice/repair-notice-archive-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/da/view/notice/RepairNoticeArchiveListView.java).
 - Загрузчики: `archiveDl` → `ru.fgk.ws.app.da.notice.entity.VRepairNoticeArchive`; `railwaysDl` → `ru.fgk.ws.app.nsi.entity.VRailway`.
 - Текущие фильтры: `railway` EQUAL; `wnListFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -1015,7 +1017,7 @@
 
 ### M067. Пакеты документов Диадок — `diadoc_DiadocPacket.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/diadoc/view/diadocpacket/diadoc-packet-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/diadoc/view/diadocpacket/DiadocPacketListView.java).
 - Загрузчики: `packetDocumentsDl` → `ru.fgk.ws.app.diadoc.entity.DiadocPacket`.
 - Текущие фильтры: `id` EQUAL; `operationsFirstAt` GREATER_OR_EQUAL; `operationsFirstAt` LESS_OR_EQUAL; `depoCode` EQUAL; `JPQL без id` JPQL(java.lang.Integer); `wagnum` EQUAL; `documentType` EQUAL.
@@ -1030,7 +1032,7 @@
 
 ### M068. Подписание — `diadoc_DiadocSigning.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/diadoc/view/signing/diadoc-signing-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/diadoc/view/signing/DiadocSigningListView.java).
 - Загрузчики: `packetFlowsDl` → `ru.fgk.ws.app.diadoc.entity.PacketFlow`; `contractorsDl` → `ru.fgk.ws.app.nsi.entity.DiadocContractor`; `depoDl` → `ru.fgk.ws.app.nsi.entity.VDepo`; `vRailwayDl` → `ru.fgk.ws.app.nsi.entity.VRailway`.
 - Текущие фильтры: `source` EQUAL; `packetDocument.documentType` IN_LIST; `status` IN_LIST; `packetDocument.mainSignatureType` EQUAL; `packetDocument.contractor.id` IN_LIST; `packetDocument.depoRef` IN_LIST; `packetDocument.depoRef.railway` IN_LIST.
@@ -1045,7 +1047,7 @@
 
 ### M069. Пакеты МХ-1 — `dr_DiadocOperRepairPacket.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/dr-diadoc-oper-repair-packet-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/DrDiadocOperRepairPacketListView.java).
 - Загрузчики: `drDiadocOperRepairPacketsDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairPacket`.
 - Текущие фильтры: `packFirstGetDate` GREATER_OR_EQUAL; `packFirstGetDate` LESS_OR_EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `JPQL без id` JPQL(ru.fgk.ws.app.nsi.entity.VRailway); `acceptStatusFilter` JPQL(ru.fgk.ws.app.pt.entity.AcceptStatus); `torId` EQUAL.
@@ -1060,7 +1062,7 @@
 
 ### M070. Пакеты Хранение и Ремпригодность — `dr_DiadocOperRepairPacketMaintainability.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/dr-diadoc-oper-repair-packet-maintainability-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/DrDiadocOperRepairPacketMaintainabilityListView.java).
 - Загрузчики: `drDiadocOperRepairPacketsDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairPacket`.
 - Текущие фильтры: `packetDocumentType` IN_LIST; `packFirstGetDate` GREATER_OR_EQUAL; `packFirstGetDate` LESS_OR_EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `JPQL без id` JPQL(ru.fgk.ws.app.nsi.entity.VRailway); `acceptStatusFilter` JPQL(ru.fgk.ws.app.pt.entity.AcceptStatus); `torId` EQUAL.
@@ -1075,7 +1077,7 @@
 
 ### M071. Пакеты рекламаций — `dr_DiadocOperRepairPacketReclamation.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/dr-diadoc-oper-repair-packet-reclamation-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/DrDiadocOperRepairPacketReclamationListView.java).
 - Загрузчики: `drDiadocOperRepairPacketsDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairPacket`.
 - Текущие фильтры: `dateout` GREATER_OR_EQUAL; `dateout` LESS_OR_EQUAL; `operationsFirstAt` GREATER_OR_EQUAL; `operationsFirstAt` LESS_OR_EQUAL; `depo.railway` EQUAL; `wagnumFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `torId` EQUAL.
@@ -1090,7 +1092,7 @@
 
 ### M072. Пакеты ВУ-23 — `dr_DiadocOperRepairPacketVu23.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/dr-diadoc-oper-repair-packet-vu23-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/drdiadocoperrepairpacket/DrDiadocOperRepairPacketVu23ListView.java).
 - Загрузчики: `drDiadocOperRepairPacketsDl` → `ru.fgk.ws.app.dr.entity.DrDiadocOperRepairPacket`.
 - Текущие фильтры: `packFirstGetDate` GREATER_OR_EQUAL; `packFirstGetDate` LESS_OR_EQUAL; `JPQL без id` JPQL(ru.fgk.ws.app.wagons.entity.WnList); `JPQL без id` JPQL(ru.fgk.ws.app.nsi.entity.VRailway); `acceptStatusFilter` JPQL(ru.fgk.ws.app.pt.entity.AcceptStatus); `torId` EQUAL.
@@ -1105,7 +1107,7 @@
 
 ### M073. Diadoc wag oper repair contracts — `dr_DiadocWagOperRepairContract.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/diadoc/view/diadoc-wag-oper-repair-contract-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/diadoc/view/DiadocWagOperRepairContractListView.java).
 - Загрузчики: `diadocWagOperRepairContractsDl` → `ru.fgk.ws.app.dr.entity.DiadocWagOperRepairContract`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}].
@@ -1120,7 +1122,7 @@
 
 ### M074. Акты по ТР-1 — `dr_Tr1ActsListView`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/vwagoperrepaircontract/vwagoperrepaircontract/tr1-acts-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/vwagoperrepaircontract/vwagoperrepaircontract/Tr1ActsListView.java).
 - Загрузчики: `vWagOperRepairContractTr1ActsDl` → `ru.fgk.ws.app.dr.entity.VDrWagOperRepairContractTr1Acts`.
 - Текущие фильтры: `actDate` GREATER_OR_EQUAL; `actDate` LESS_OR_EQUAL.
@@ -1135,7 +1137,7 @@
 
 ### M075. Остатки деталей по 1С — `pt_1cBalance.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/pt1cbalance/pt1c-balance-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/pt1cbalance/Pt1cBalanceListView.java).
 - Загрузчики: `pt1cBalancesDl` → `ru.fgk.ws.app.pt.entity.Pt1cBalance`; `vRailwayDl` → `ru.fgk.ws.app.nsi.entity.VRailway`; `depoDl` → `ru.fgk.ws.app.nsi.entity.VDepo`; `partTypeDl` → `ru.fgk.ws.app.nsi.entity.NvPartType`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `depo` EQUAL; `detailFactory` EQUAL; `detailNumber` EQUAL; `detailYear` EQUAL; `detailUid` IN_LIST; `depo.railway` EQUAL; `partType` IN_LIST; `JPQL без id` JPQL(ru.fgk.ws.app.pt.entity.PtList).
@@ -1150,7 +1152,7 @@
 
 ### M076. Добавить к списку — `pt_PtLists.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptlist/pt-lists-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptlist/PtListsView.java).
 - Загрузчики: `ptListsDl` → `ru.fgk.ws.app.pt.entity.PtList`.
 - Текущие фильтры: `name` CONTAINS.
@@ -1165,7 +1167,7 @@
 
 ### M077. Экспорт документов по ремонту деталей — `pt_PtRepairPacketExportFiles.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptrepairpacketexportfiles/pt-repair-packet-export-files-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptrepairpacketexportfiles/PtRepairPacketExportFilesListView.java).
 - Загрузчики: `ptRepairPacketsDl` → `ru.fgk.ws.app.pt.entity.PtRepairPacket`.
 - Текущие фильтры: `fpu26ActDate` GREATER_OR_EQUAL; `fpu26ActDate` LESS_OR_EQUAL; `contract.number` EQUAL; `ptRepairPacketUserData.accountingTransferDate` GREATER_OR_EQUAL; `ptRepairPacketUserData.accountingTransferDate` LESS_OR_EQUAL; `fpu26ActNumberFilter` JPQL(java.lang.Boolean).
@@ -1180,7 +1182,7 @@
 
 ### M078. Заявки на ремонт деталей — `pt_RepairClaim.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptrepairclaim/pt-repair-claim-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptrepairclaim/PtRepairClaimListView.java).
 - Загрузчики: `ptRepairClaimsDl` → `ru.fgk.ws.app.pt.entity.PtRepairClaim`; `vRailwayDl` → `ru.fgk.ws.app.nsi.entity.VRailway`; `contractDl` → `ru.fgk.ws.app.pt.entity.PtRepairContract`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `dateFromFilter` JPQL(java.time.LocalDate); `dateToFilter` JPQL(java.time.LocalDate); `depoRepair.railway` EQUAL; `claimType` EQUAL; `contract` EQUAL.
@@ -1195,7 +1197,7 @@
 
 ### M079. Комплектация вагонов — `wn_VWagEquipmentList.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagequipmentlist/v-wag-equipment-list-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagequipmentlist/VWagEquipmentListListView.java).
 - Загрузчики: `vWagEquipmentListsDl` → `ru.fgk.ws.app.wagons.entity.VWagEquipmentList`.
 - Текущие фильтры: genericFilter `genericFilter` — каталог [{"include": ".*"}]; `jpqlFilter` JPQL(ru.fgk.ws.app.wagons.entity.WnList).
@@ -1210,7 +1212,7 @@
 
 ### M080. История перевозочных документов — `wn_VWagInvoiceArchive`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagpassport/v-wag-invoice-archive-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagpassport/VWagInvoiceArchiveView.java).
 - Загрузчики: `vWagInvoiceArchiveDl` → `ru.fgk.ws.app.wagons.entity.VWagInvoiceArchive`.
 - Текущие фильтры: `dateRaskrFilter` GREATER_OR_EQUAL; `invoiceDateCreateFilter` LESS_OR_EQUAL.
@@ -1227,7 +1229,7 @@
 
 ### M081. Отчет Распределение вагонов в ТР — `ReportAllocationOperRepair.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/rp/view/report-allocation-oper-repair-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/rp/view/ReportAllocationOperRepairListView.java).
 - Загрузчики: `reportAllocationOperRepairDtoDl` → `ru.fgk.ws.app.rp.entity.ReportAllocationOperRepairDto`; `nvCategoryUsesDl` → `ru.fgk.ws.app.nsi.entity.NvCategoryUse`; `nvOwnTypesDl` → `ru.fgk.ws.app.nsi.entity.NvOwnType`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1242,7 +1244,7 @@
 
 ### M082. Допретензионная работа — `ReportWagOperRepairDto.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dt/view/reportwagoperrepairdto/report-wag-oper-repair-dto-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dt/view/reportwagoperrepairdto/ReportWagOperRepairDtoListView.java).
 - Загрузчики: `reportWagOperRepairDtoDl` → `ru.fgk.ws.app.dt.entity.ReportWagOperRepairDto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1257,7 +1259,7 @@
 
 ### M083. Количество предыдущих отцепок — `UncouplingCountView`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/uncouplingcount/uncoupling-count-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/uncouplingcount/UncouplingCountView.java).
 - Загрузчики: `uncouplingCountsDl` → `ru.fgk.ws.app.dr.entity.UncouplingCount`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1272,7 +1274,7 @@
 
 ### M084. Статистика экранов — `UserActivityStats.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/common/view/useractivitystats/user-activity-stats-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/common/view/useractivitystats/UserActivityStatsListView.java).
 - Загрузчики: `userActivityStatsDl` → `ru.fgk.ws.app.common.entity.UserActivityStatsDto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1287,7 +1289,7 @@
 
 ### M085. Выгрузка на прошлую дату — `WnWagArchiveSpecsDto.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/wnwagarchivespecs/wn-wag-archive-specs-dto-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/wnwagarchivespecs/WnWagArchiveSpecsDtoListView.java).
 - Загрузчики: `wnWagArchiveSpecsDtoDl` → `ru.fgk.ws.app.wagons.entity.WnWagArchiveSpecsDto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1302,7 +1304,7 @@
 
 ### M086. Последний выпуск по списку — `WnWagLastOper62Dto.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/wnwaglastoper62dto/wn-wag-last-oper62-dto-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/wnwaglastoper62dto/WnWagLastOper62DtoListView.java).
 - Загрузчики: `wnWagLastOper62DtoDl` → `ru.fgk.ws.app.wagons.entity.WnWagLastOper62Dto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1317,7 +1319,7 @@
 
 ### M087. Добавление пакетов из ВакТк — `diadoc_DiadocVagTkImport.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/diadoc/view/vagtkimport/diadoc-vagtk-import-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/diadoc/view/vagtkimport/DiadocVagTkImportView.java).
 - Загрузчики: `rowsDl` → `ru.fgk.ws.app.diadoc.dto.DiadocVagTkImportRow`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1332,7 +1334,7 @@
 
 ### M088. Справка по документообороту — `dr_ReportOperRepairDocFlowDto.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/reportoperrepairdocflowdto/report-oper-repair-doc-flow-dto-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/reportoperrepairdocflowdto/ReportOperRepairDocFlowDtoListView.java).
 - Загрузчики: `reportOperRepairDocFlowDtoDl` → `ru.fgk.ws.app.dr.entity.ReportOperRepairDocFlowDto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1347,7 +1349,7 @@
 
 ### M089. Анализ стоимости ТР-2 — `dr_ReportTR2PriceAnalyzeDtoListView.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/dr/view/reporttr2priceanalyzedto/report-tr2-price-analyze-dto-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/dr/view/reporttr2priceanalyzedto/ReportTR2PriceAnalyzeDtoListView.java).
 - Загрузчики: `reportTR2PriceAnalyzeDtoDl` → `ru.fgk.ws.app.repair.entity.dto.TR2PriceAnalyzeDto`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1362,7 +1364,7 @@
 
 ### M090. Отчет по срокам хранения в 1С — `pt_Pt1cStorageReport.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/pt1cstoragereport/pt1c-storage-report-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/pt1cstoragereport/Pt1cStorageReportListView.java).
 - Загрузчики: `pt1cStorageReportRowsDl` → `ru.fgk.ws.app.pt.entity.Pt1cStorageReportRow`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1377,7 +1379,7 @@
 
 ### M091. Реестр деталей — `pt_PtPart.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/pt/view/ptpart/pt-part-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/pt/view/ptpart/PtPartListView.java).
 - Загрузчики: `ptPartsDl` → `ru.fgk.ws.app.pt.entity.PtPart`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1392,7 +1394,7 @@
 
 ### M092. Остаток вагонов в ТР — `rp_VRpOperBalance.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/rp/view/reportrpoperbalance/vrpoperbalance/v-rp-oper-balance-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/rp/view/reportrpoperbalance/vrpoperbalance/VRpOperBalanceListView.java).
 - Загрузчики: `vRpOperBalancesDl` → `ru.fgk.ws.app.rp.entity.VRpOperBalance`; `nvCategoryUsesDl` → `ru.fgk.ws.app.nsi.entity.NvCategoryUse`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1407,7 +1409,7 @@
 
 ### M093. Отцепка вагонов в текущий ремонт — `rp_VRpOperDefect.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/rp/view/reportrpoperdefectlist/vrpoperdefect/v-rp-oper-defect-list-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/rp/view/reportrpoperdefectlist/vrpoperdefect/VRpOperDefectListView.java).
 - Загрузчики: `vRpOperDefectsDl` → `ru.fgk.ws.app.rp.entity.VRpOperDefect`; `nvCategoryUsesDl` → `ru.fgk.ws.app.nsi.entity.NvCategoryUse`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1422,7 +1424,7 @@
 
 ### M094. Поиск по номеру детали — `wn_VWagEquipmentArchiveFind.list`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/view/vwagequipmentarchive/v-wag-equipment-archive-find-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/view/vwagequipmentarchive/VWagEquipmentArchiveFindView.java).
 - Загрузчики: `nvPartTypesDl` → `ru.fgk.ws.app.nsi.entity.NvPartType`; `vWagEqWheelsetDl` → `ru.fgk.ws.app.wagons.entity.VWagEqWheelsetArchList`; `vWagEqBogieDl` → `ru.fgk.ws.app.wagons.entity.VWagEqBogieArchList`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..
@@ -1437,7 +1439,7 @@
 
 ### M095. История операций — `wn_VWagOperArchive`
 
-- [ ] Перевести и принять страницу; сейчас **не начато**.
+- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче.
 - Источники: [XML](../../app/src/main/resources/ru/fgk/ws/app/wagons/view/vwagpassport/v-wag-oper-archive-view.xml); [контроллер](../../app/src/main/java/ru/fgk/ws/app/wagons/view/vwagpassport/VWagOperArchiveView.java).
 - Загрузчики: `wnVWagOperArchiveDl` → `ru.fgk.ws.app.wagons.entity.VWagOperArchive`.
 - Текущие фильтры: Стандартных property/jpql/genericFilter нет..

@@ -15,6 +15,8 @@ CONTROLS = {"textField", "textArea", "datePicker", "dateTimePicker", "entityPick
             "entityComboBox", "entityMultiSelectComboBox", "comboBox", "multiSelectComboBox",
             "checkbox", "select", "integerField", "numberField", "listPicker"}
 PILOT = ["nsi_NvPartType.list", "RejectReason.list", "nsi_VDepo.list"]
+# User scope, 2026-09-07: never reactivate rollout to other views when regenerating.
+ACTIVE_RVK_VIEWS = frozenset([*PILOT, "DiadocDocumentType.list"])
 # Reviewed custom filtering paths, not a guess based on the name of an input field.
 CUSTOM_EXISTING = {
     "UserActivityStats.list", "diadoc_DiadocVagTkImport.list", "NvProcessingSettings.list",
@@ -315,7 +317,9 @@ def render_page(row):
         "- Целевой каталог для `" + str(row["proposed_primary_grid"]) + "`: " + (", ".join("`" + f["property"] + "`" for f in row["proposed_fields"]) or "колонки динамические; получить property paths из конфигурации грида в адаптере F04") + ". Только доступные для чтения и поддержанные источником поля; вычисляемые значения фильтрует явный provider. Дочерние гриды не подключать автоматически.")
     return "\n".join([
         f"### {row['task_id']}. {row['title']} — `{row['view_id']}`",
-        "", "- [ ] Перевести и принять страницу; сейчас **не начато**.",
+        "", ("- [ ] Проверить уже подключённую страницу; актуальные результаты — в журнале реализации."
+               if row["view_id"] in ACTIVE_RVK_VIEWS else
+               "- [ ] **Отложено в [backlog](13-pages-backlog.md)**; не выполнять в текущей задаче."),
         "- Источники: " + link(row["xml"], "XML") + ("; " + link(row["controller"], "контроллер") if row["controller"] else "") + ".",
         "- Загрузчики: " + ("; ".join("`" + l["id"] + "` → `" + l["entity"] + "`" for l in row["loaders"]) or "Нет query loader; требуется адаптер/контекст владельца.") + ".",
         "- Текущие фильтры: " + ("; ".join(fs) or "Стандартных property/jpql/genericFilter нет.") + ".",
@@ -334,8 +338,9 @@ def render_page(row):
 def render_queue(category, filename, title):
     selected = [r for r in rows if r["category"] == category]
     lines = [f"# {title}", "", "[К плану](README.md) · [Полный реестр](page-inventory.json)", "",
-        f"Всего задач: **{len(selected)}**. Порядок фиксирован: номер волны, затем viewId; пилот имеет отдельный порядок.",
-        "Статусы страниц — не начато. Номера строк относятся к снимку 2026-09-05; JSON хранит полный набор найденных обработчиков, условий, полей и ограничений загрузчика.",
+        f"Карточек исходного аудита: **{len(selected)}**. Остальные страницы отложены в [backlog](13-pages-backlog.md).",
+        "Текущий объём: только уже подключённые M001–M003 и N002. Порядок волн ниже — справочный, не указание продолжать внедрение.",
+        "Статусы подключённых страниц сверять с журналом; остальные отложены. JSON хранит исходники, обработчики, условия, поля и ограничения загрузчика.",
         "", "**Порядок волны 8:** сначала оставшиеся задачи M из документа 09, затем задачи N из документа 10. Зависимости F02–F08 означают приёмку соответствующего пути, а не завершение всех необязательных возможностей аддона.",
         "", "Поля вне property binding перечислены как кандидаты для проверки, а не как разрешение переносить настройки отображения/параметры команд в фильтр.", ""]
     for wave in sorted({r["wave"] for r in selected}):

@@ -1,15 +1,18 @@
 # F11. Проверки и допуск к production
 
-[К плану](README.md) · Репозитории: `rvk-filter`, `rvk-ws` · Статус будущих гейтов: **не начато**.
-Фактические результаты аудита находятся в [F01](01-audit.md); не переносить их автоматически на изменённый код.
+> Изменение объёма 2026-09-07: требования этого документа применяются сейчас к аддону и четырём уже подключённым страницам M001–M003, N002. Добавление на другие страницы, дальнейшие волны, рецепт их перевода и их индивидуальная приёмка перенесены в [backlog](13-pages-backlog.md). Исторические указания перейти к следующей странице ниже не расширяют текущее задание.
+
+[К плану](README.md) · Репозитории: `rvk-filter`, `rvk-ws` · Статус: **Gate 1 fallback и Gate 2 пройдены для текущих изменений; Gate 3 и production-приёмка частичны**.
+Исходный аудит — [F01](01-audit.md). Свежие результаты текущего кода — [отчёт продолжения](15-addon-operations-verification.md): аддон 496 passed на PostgreSQL без пропусков; rvk-ws 1196 passed, 9 skipped; compileJava/spotlessCheckAll PASS. Browser fixtures проверены qa; точный объём host-проверки указан в отчёте. Старые результаты не переносятся автоматически на изменённый код.
 
 ## Gate 1. API, Java, XML и frontend
 
-- [ ] Сверить новые Jmix/Vaadin API с Context7/IDE, при их отсутствии — с существующим рабочим кодом или jar разрешённой версии. Существующие инструкции `.agents/skills` обязательны при реализации Jmix-артефактов.
-- [ ] IDE get_file_problems по каждому изменённому Java/XML и XSD, с warnings и правильным projectPath. Подключение к другому проекту не засчитывается как чистая инспекция.
-- [ ] Fallback: compileJava, непустые файлы, package/controller/descriptor согласованы; нет дублей ViewController ID, неверных property paths, loader/container/msg ссылок. Для fragments проверить owner/provided containers.
+- [x] Сверить новые Jmix/Vaadin API с Context7/IDE, при их отсутствии — с существующим рабочим кодом или jar разрешённой версии. Существующие инструкции `.agents/skills` обязательны при реализации Jmix-артефактов.
+- [ ] IDE get_file_problems по каждому изменённому Java/XML и XSD, с warnings и правильным projectPath. Инструмент отклонил projectPath rvk-filter: открыт rvk-ws. Использован fallback, инспекция IDE не заявляется пройденной.
+- [x] Fallback: compileJava, непустые файлы, package/controller/descriptor согласованы; нет дублей ViewController ID, неверных property paths, loader/container/msg ссылок. Для fragments проверить owner/provided containers.
 - [ ] Проверить XSD компиляцией с resolver фиксированной версии Jmix и реальную загрузку полноценных XML fixture views.
 - [ ] JS: syntax check, browser module imports, frontend bundle, отсутствие app-specific imports и правильная упаковка ресурсов в addon JAR/starter.
+- [ ] Для изменений в rvk-ws прогнать `./gradlew spotlessApply` и `spotlessCheckAll` (palantir-java-format, стиль GOOGLE) — иначе изменение не пройдёт проверку стиля проекта. В аддоне spotless не подключён: там держаться существующего форматирования файлов.
 
 ```bash
 # rvk-filter
@@ -17,6 +20,7 @@
 
 # rvk-ws
 ./gradlew :app:compileJava
+./gradlew spotlessApply && ./gradlew spotlessCheckAll
 ```
 
 Если `./gradlew` app не скачивает wrapper с repo.main.vgk, использовать документированный `system/change-gradle-to-remote-repo.sh` и проверить `./gradlew --version`; не объявлять Gradle недоступным без этого шага.
@@ -34,8 +38,8 @@ docker info
 
 Проверить `app/src/test/resources/application-test-local.properties`: datasource указывает на localhost PostgreSQL Compose, main schema; optional import активен. Не выводить credentials в отчёт.
 
-- [ ] Jmix context аддона и потребителя загружается; тестов действительно больше нуля.
-- [ ] PostgreSQL suite аддона запускается на одноразовой БД/Testcontainers с настоящим addon changelog; два отключённых теста unique включены для PostgreSQL. Тесты не полагаются только на HSQL.
+- [x] Jmix context аддона и потребителя загружается; 496 тестов аддона, 1205 тестов app (1196 passed + 9 skipped).
+- [x] PostgreSQL suite аддона запускается на одноразовой БД/Testcontainers с настоящим addon changelog; два отключённых теста unique включены для PostgreSQL. Тесты не полагаются только на HSQL.
 - [ ] Проверены новая БД, upgrade legacy schema+DATABASECHANGELOG, повторный запуск, constraints, TEXT/@Lob и CRUD всех операций F06.
 - [ ] Два concurrent save/default и stale version приводят к определённому результату; unique/optimistic error превращаются в пользовательское сообщение.
 - [ ] Тесты безопасности выполняются под реальными ролями A/B/global-manager/maintainer, включая прямой DataManager и подмену persisted owner.
@@ -71,9 +75,9 @@ BootRun не является Gate 2. Для browser-прохода исполь
 | REST/delegate, который не умеет Condition | Явный adapter либо понятный отказ, не фильтр-пустышка |
 
 <a id="page"></a>
-## Приёмка каждой страницы M/N
+## Приёмка действующих страниц; шаблон для будущего backlog
 
-Для каждой карточки F09/F10 оформить отдельную задачу/PR с её task ID; общий scope страницы не расширять соседними legacy-refactors.
+Сейчас для M001–M003 и N002; для остальных карточек только после возвращения из backlog. Оформить отдельную задачу/PR с её task ID; общий scope страницы не расширять соседними legacy-refactors.
 
 1. Зафиксировать исходный query, обязательные параметры/parent context, defaults, роли, URL/settings и все пользовательские handlers из реестра. Значения renderer и настройки колонок не переносить в условия.
 2. На изолированном наборе данных получить ID/count/sort старого режима: пустой фильтр, каждое условие, комбинация, null/false/0, граничные даты, пустой результат. Для generic — каталог и AND/OR; для отчёта — также суммы/группы.
@@ -87,7 +91,7 @@ BootRun не является Gate 2. Для browser-прохода исполь
 ## Выпуск и наблюдение
 
 - [ ] Сборка приложения `./gradlew :app:bootJar -Pvaadin.productionMode=true` с опубликованной фиксированной версией starter, не с MavenLocal.
-- [ ] До включения страницы на production проверены migrations/roles и её flag. Включение в порядке волн F09/F10; пакетный массовый перевод без сверки результатов запрещён.
+- [ ] До включения страницы на production проверены migrations/roles и её flag. Остальные волны F09/F10 отложены; пакетный массовый перевод без сверки результатов запрещён.
 - [ ] Логи содержат component key, активный режим, тип операции, длительность/результат и диагностический код ошибки. Не логировать полный payload/поисковый текст/чужие личные пресеты.
 - [ ] Отслеживать ошибки Apply/preset CRUD и длительность загрузки по странице относительно старого режима; регрессия результата/прав немедленно возвращает flag в старый режим.
 - [ ] Удаление legacy фильтров и перенос production generic presets не входят в этот выпуск.

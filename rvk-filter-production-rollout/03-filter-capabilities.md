@@ -1,6 +1,6 @@
 # F03. Полнота условий и универсальные источники значений
 
-[К плану](README.md) · Репозиторий: `rvk-filter`; доменные providers — `rvk-ws` · Статус: **не начато**.
+[К плану](README.md) · Репозиторий: `rvk-filter`; доменные providers — `rvk-ws` · Статус: **в работе** — typed JPQL/IN реализован в 63088c5, фиксированные property-операции добавлены 2026-09-08. [Проверка и ограничения](15-addon-operations-verification.md).
 Зависит от XML-контракта F02; возможности включаются до первой страницы, которой они нужны.
 
 ## Матрица разрывов
@@ -8,12 +8,12 @@
 | Возможность | Сейчас | Примеры потребителей |
 |---|---|---|
 | Text CONTAINS, scalar equality, enum, числа, даты | Есть базовая реализация | Пилот: типы деталей, причины отклонения, депо |
-| Выбор операции, отрицания, пусто/не пусто | Неполно; TEXT всегда CONTAINS | ImportedPacketArch.list, da_VOperBalanceSng.list, страницы с genericFilter |
+| Выбор операции, отрицания, пусто/не пусто | Фиксированный operation реализован; пользовательский выбор открыт | ImportedPacketArch.list, da_VOperBalanceSng.list, страницы с genericFilter |
 | Entity reference и динамический справочник | Range.class запрещён | da_ClaimDepo.list, pt_RepairClaim.list, PtRepairClaimItem.list, diadoc_DiadocSigning.list |
-| Списки UUID/чисел/entity | Есть scalar multiSelect только с options; нет JPQL IN | pt_1cBalance.list, PtRepairClaimItem.list, PtRepairPacket.list |
-| JPQL Date и повтор одного параметра | Нет Date, только String/BigDecimal/flag | da_ContractAgent.list, dt_OperRepairNorms.list, dr_ExportFiles.list |
-| JPQL true/false как параметр | BOOLEAN работает только как включение where при true | nsi_NsiNoticeMail.list, PtRepairPacket.list, dr_ExportFiles.list |
-| Enum/Integer/UUID/Long в JPQL | Нет явной типизации | acceptStatus в DR packet views, список ремонтов/вагонов, diadoc_DiadocPacket.list |
+| Списки UUID/чисел/entity | Типизированный JPQL IN, multiSelect с options и valueList реализованы | pt_1cBalance.list, PtRepairClaimItem.list, PtRepairPacket.list |
+| JPQL Date и повтор одного параметра | Типизированные даты и повтор параметра реализованы | da_ContractAgent.list, dt_OperRepairNorms.list, dr_ExportFiles.list |
+| JPQL true/false как параметр | Flag и типизированный Boolean(true/false) реализованы | nsi_NsiNoticeMail.list, PtRepairPacket.list, dr_ExportFiles.list |
+| Enum/Integer/UUID/Long в JPQL | Явная типизация parameterClass реализована | acceptStatus в DR packet views, список ремонтов/вагонов, diadoc_DiadocPacket.list |
 | Пользовательские группы AND/OR | Только плоский AND | Все 21 genericFilter, в том числе User.list и wn_VWagPassport.list |
 | REST / вычисляемые отчёты | Не автоматическая интеграция | F04; отчёты RP, PT storage, загрузчики DTO |
 
@@ -21,28 +21,32 @@
 
 ## F03.1. Операции
 
-- [ ] Поддержать EQUAL/NOT_EQUAL, CONTAINS/NOT_CONTAINS/STARTS_WITH/ENDS_WITH, GREATER/GREATER_OR_EQUAL/LESS/LESS_OR_EQUAL, IN_LIST/NOT_IN_LIST, IS_SET и диапазоны по совместимым типам metadata.
-- [ ] Отделить «поле не участвует» от Boolean false, 0, «пусто» и пустой коллекции. IS_SET(false) означает IS NULL; это не отсутствие условия.
+- [x] Фиксированный XML/Java operation: EQUAL/NOT_EQUAL, CONTAINS/NOT_CONTAINS/STARTS_WITH/ENDS_WITH, GREATER/GREATER_OR_EQUAL/LESS/LESS_OR_EQUAL, IN_LIST/NOT_IN_LIST, IS_SET; прежние диапазоны без operation сохранены.
+- [ ] Пользовательский выбор операции с allowedOperations и сохранением выбора; не путать с фиксированной операцией разработчика.
+- [x] Отделить «поле не участвует» от Boolean false, 0, «пусто» и пустой коллекции. IS_SET(false) означает IS NULL; это не отсутствие условия.
 - [ ] Пустой пользовательский ввод не ограничивает список, но результат доменного поиска «ID не найдены» даёт ложное условие, а не снятие ограничения.
-- [ ] Сохранить буквальный поиск `%`, `_` и обратного слеша через штатную parameterization/escaping Jmix. JPQL/SQL не строить конкатенацией клиентского текста.
-- [ ] Проверять диапазоны from <= to; сообщения указывают поле. Для дат сохранить согласованные включённые/исключённые границы, LocalDate/LocalDateTime/OffsetDateTime/Instant и часовую зону пользователя.
+- [x] Сохранить буквальный поиск `%`, `_` и обратного слеша через штатную parameterization/escaping Jmix. JPQL/SQL не строить конкатенацией клиентского текста.
+- [x] Проверять диапазоны from <= to; сообщения указывают поле. Реализовано в FilterStateValidation, отрицательные числовые/date сценарии покрыты FilterStateValidationTest.
+- [ ] Для дат подтвердить согласованные включённые/исключённые границы, LocalDate/LocalDateTime/OffsetDateTime/Instant и часовую зону пользователя на PostgreSQL. Resolver и конверсия покрыты отдельными тестами; полная матрица timezone/DST остаётся открытой.
 
 ## F03.2. Справочники и ссылки
+
+`valueList` реализован для списков UUID/чисел/строковых идентификаторов: разделители, дедупликация, typed IN/NOT IN, номер неверного элемента, лимит 1000. Это не entity picker; пункты источников справочников ниже остаются открыты.
 
 - [ ] Entity single/multi selection: в JSON только устойчивый типизированный id, подпись — через InstanceName/message metadata. После повторного открытия значения восстанавливаются пакетно, без запроса на каждый chip.
 - [ ] Статические options и itemsContainer — для малых наборов; itemsQuery/provider — поиск, страница, лимит и разрешение выбранных IDs для больших наборов.
 - [ ] Providers выполняются от текущего пользователя и учитывают entity/attribute/row-level права. Недоступный или удалённый выбранный элемент обозначается явно и блокирует незаметное применение усечённого пресета.
 - [ ] Зависимые селекторы «дорога → депо», «тип → детали»: обновлять источник по выбранному родителю, валидировать дочерний id повторно. Не загружать весь VStation/VDepo на клиент.
-- [ ] Списки номеров/UUID поддерживают вставку с пробелами, переводами строк, запятыми и точкой с запятой, удаление дубликатов и указание неверных элементов. Не сохранять entity JSON целиком.
+- [x] Списки номеров/UUID поддерживают вставку с пробелами, переводами строк, запятыми и точкой с запятой, удаление дубликатов и указание неверных элементов. Не сохранять entity JSON целиком.
 
 ## F03.3. JPQL
 
-- [ ] Сохранять семантику `{E}`, join и where. Тип параметра задаётся серверной конфигурацией и не принимается из браузера.
-- [ ] Повтор `?` в одном условии означает повтор одного типизированного параметра. Обрабатывать placeholders вне строковых литералов; не заменять вопросительные знаки в литералах. Имена генерируются с изоляцией component/condition instance, без коллизий с базовым query.
-- [ ] Старый BOOLEAN без parameterClass остаётся флагом включения условия. BOOLEAN с parameterClass=java.lang.Boolean передаёт true или false в параметр; оба значения значимы.
-- [ ] Поддержать Date, Integer/Long/BigDecimal, UUID, enum и коллекцию значений. Enum использовать по Jmix metadata, не по русской подписи. Для entity id преобразовывать к фактическому типу конечного ключа.
+- [x] Сохранять семантику `{E}`, join и where. Тип параметра задаётся серверной конфигурацией и не принимается из браузера.
+- [x] Повтор `?` в одном условии означает повтор одного типизированного параметра. Обрабатывать placeholders вне строковых литералов; не заменять вопросительные знаки в литералах. Имена генерируются с изоляцией component/condition instance, без коллизий с базовым query.
+- [x] Старый BOOLEAN без parameterClass остаётся флагом включения условия. BOOLEAN с parameterClass=java.lang.Boolean передаёт true или false в параметр; оба значения значимы.
+- [x] Поддержать Date, Integer/Long/BigDecimal, UUID, enum и коллекцию значений. Enum использовать по Jmix metadata, не по русской подписи. Для entity id преобразовывать к фактическому типу конечного ключа.
 - [ ] Несколько JOIN не должны дублировать alias и строки/количество. Проверить count/pagination и случаи нескольких записей дочерней коллекции.
-- [ ] Условие без параметра явно объявляется флаговым; непустой ввод нельзя молча игнорировать и трактовать как флаг.
+- [x] Условие без параметра явно объявляется флаговым; непустой ввод нельзя молча игнорировать и трактовать как флаг.
 
 ## F03.4. Каталог полей и AND/OR
 
