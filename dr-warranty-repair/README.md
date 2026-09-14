@@ -18,11 +18,10 @@
 | [01-old-table.md](01-old-table.md) | Структура старой таблицы `TrkRemPretens`: все колонки, типы, описания |
 | [02-old-procedure.md](02-old-procedure.md) | Процедура `pThp_PretTehSelect2`: параметры, источники, 228 выходных колонок, вычисляемые поля, особенности |
 | [03-old-form.md](03-old-form.md) | Форма старой системы по скриншотам: зоны ДЭПС и ДЮ, вкладки, поля → колонки |
-| [04-new-model.md](04-new-model.md) | **Реализованная модель**: 4 таблицы + кэш справочников Case.one, колонки, типы, enum'ы (выгружено из changelog-ов) |
-| [05-column-mapping.md](05-column-mapping.md) | Матрица переноса: каждая из 129 колонок старой таблицы → новая колонка; алгоритм заливки |
-| [06-open-questions.md](06-open-questions.md) | Что решено при реализации и что осталось решить |
+| [04-new-model.md](04-new-model.md) | Новая модель: 4 таблицы (`dr_warranty_repair`, `..._deps`, `..._case_one`, `..._du`), колонки, типы, ограничения, enum'ы |
+| [05-column-mapping.md](05-column-mapping.md) | Полная матрица маппинга: каждая колонка старой таблицы → новая таблица.колонка или «не переносится» |
+| [06-open-questions.md](06-open-questions.md) | Открытые вопросы, требующие подтверждения |
 | [07-documents.md](07-documents.md) | Вкладка «Копии документов»: процедуры `pTHP_DiadocSelectDoc`, `pTHP_GrafDocCopySelect`, `pTHP_GrafPDFPreSelect` |
-| [08-status-and-next-steps.md](08-status-and-next-steps.md) | **Что сделано на этапе 1 и что делать на этапе 2 (интерфейсы)**; какой открытый вопрос что блокирует |
 
 ## Источники (в этой папке)
 
@@ -43,40 +42,40 @@
   «Документы», «Допретензионная работа»;
 - **Зона ДЮ** — вкладки «Претензия», «Судебная работа», получение денег.
 
-Новая система — **4 таблицы** плюс общий кэш справочников Case.one:
+Новая система — **4 таблицы**:
 
-1. `legal_warranty_repair` — одна запись на **отцепку**, заполняется
-   автоматически (из ЕО/ВагТК и НСИ), PK `repair_uid` (UUID);
-2. `legal_warranty_repair_deps` — создаётся при **создании претензии** (данные
-   пользователей **ДЭПС**); суррогатный `id` — PK, частичный UNIQUE
-   `(repair_uid, claim_index) WHERE deleted_date IS NULL`;
-3. `legal_warranty_repair_du` — данные пользователей **ДЮ**, 1:1 с претензией;
-4. `legal_warranty_repair_case_one` — карточка Case.one и результат отправки,
-   1:1 с претензией;
-5. `legal_caseone_ref` — кэш справочников Case.one (контрагенты, пользователи,
-   каталоги), из него в претензии выбираются контрагент, ответственный и
-   каталог; в самой претензии хранится снимок.
+1. `dr_warranty_repair` — одна запись на **отцепку**, заполняется
+   автоматически (из ЕО/ВагТК и НСИ), **уникальный ключ `repair_uid`**;
+2. `dr_warranty_repair_deps` — записывается при **создании претензии**
+   (данные пользователей **ДЭПС**); суррогатный `id` — PK, `repair_uid` не
+   уникален (несколько претензий на одну отцепку), UNIQUE
+   `(repair_uid + claim_index)`;
+3. `dr_warranty_repair_case_one` — данные по карточке Case.one и результат
+   отправки (по кнопке «Отправить»); связь **1:1** с `deps` (FK `deps_id`);
+4. `dr_warranty_repair_du` — данные пользователей **ДЮ**; связь **1:1** с
+   `deps` (FK `deps_id`).
 
-## Состояние
+## Границы задачи (согласовано)
 
-**Этап 1 (модель данных) завершён.** Код — `ru.fgk.ws.app.legal.warrantyrepair`
-(+ `legal.caseone.entity.CaseOneRef`), changelog-и — `01-tbl/32*.xml` и
-`tbl-legal_caseone_ref.xml`.
-
-**Этап 2 — интерфейсы**: формы, роли ДЭПС и ДЮ, автозаполнение, выбор из
-справочников Case.one, отправка карточек. Начинается после ответов на вопросы
-из [06-open-questions.md](06-open-questions.md). Полный перечень работ и
-таблица «какой вопрос что блокирует» —
-в [08-status-and-next-steps.md](08-status-and-next-steps.md).
-
-Переливка данных из ВагТК настраивается вручную; маппинг всех 129 колонок и
-алгоритм — в [05-column-mapping.md](05-column-mapping.md).
+- В спеке фиксируется **только модель данных**: 4 сущности, Liquibase,
+  enum'ы, маппинг колонок.
+- Формы (list/detail views), сервисы, интеграция с Case.one — **отдельная** задача.
+- Переливка данных из ВагТК в новые таблицы — будет настраиваться **отдельно,
+  вручную** (ЕО = единое окно РЖД данных; пока источник — ВагТК). Маппинг
+  старых полей на новые для переноса — в [05-column-mapping.md](05-column-mapping.md)
+  (раздел «Перенос данных»).
+- Код сущностей: пакет `ru.fgk.ws.app.legal` (подпакет `warrantyrepair`),
+  имена таблиц — `dr_warranty_repair*`.
+- Разделение колонок по таблицам сделано **по скриншотам формы**; в
+  docx-заготовке «Технологические_неисправности_по_вагонам.docx» разделения
+  нет (только черновик структуры `dr_warranty_repair`) — имена колонок
+  `dr_warranty_repair` сверить с docx (см. [06-open-questions.md](06-open-questions.md)).
 
 ## Связанные артефакты новой системы
 
-- `ru.fgk.ws.app.dr.entity.WarrantyRepairEnum` — существующий enum (0=ФГК,
-  1=ВРК1), переиспользован для `legal_warranty_repair.warranty_repair`;
+- `ru.fgk.ws.app.dr.entity.WarrantyRepairEnum` — уже существует (0=ФГК, 1=ВРК1),
+  используется в отчётах ТР-2;
 - `ru.fgk.ws.app.legal.caseone.*` — готовая обвязка Case.one API
-  (`CaseOneApiClient`, `CaseOneTokenService`, `CaseOneSettings`);
+  (`CaseOneApiClient`, `CaseOneTokenService`, `CaseOneSettings`, примеры в `docs/caseone/`);
 - `docs/caseone/pret_card_01 - пример карточки case one.json` — пример карточки,
   которая создаётся в Case.one по претензии.
