@@ -1,13 +1,13 @@
 # T03 — Роли ДЭПС, ДЮ, администратор и сервис создания претензии
 
-Статус: todo
+Статус: done
 План: [plan.md](../../plan.md)
 Зависимости: [T01](../T01/task.md)
 Сложность: medium — роли по образцам проекта плюс небольшой транзакционный
 сервис; контракт прав зафиксирован в плане
 Сложность проверки: medium — полный `:app:test` и IT на разграничение под
 разными пользователями; браузер не нужен
-Актуальная проверка: нет
+Актуальная проверка: [checks/001.md](checks/001.md)
 
 ## Коротко
 
@@ -114,13 +114,15 @@ changelog-и, `menu.xml`. Общие ресурсы: БД, Gradle daemon. Пар
 
 ## Прогресс и продолжение
 
-- [ ] Создать `LegalTechClaimDepsRole`, `LegalTechClaimDuRole`; дополнить
+- [x] Создать `LegalTechClaimDepsRole`, `LegalTechClaimDuRole`; дополнить
       админскую роль (view/menu, НСИ, view-entity).
-- [ ] `TechClaimService.createClaim`.
-- [ ] `TechClaimSecurityIT` (C1–C5).
-- [ ] Самопроверка, `result.md`.
-- [ ] Передать результат на независимую проверку.
+- [x] `TechClaimService.createClaim`.
+- [x] `TechClaimSecurityIT` (C1–C5) и unit-тест распознавания конфликта
+      индекса `TechClaimServiceTest`.
+- [x] Самопроверка, `result.md`.
+- [x] Передать результат на независимую проверку.
 
-Ближайший шаг: открыть `PtContractWriteRole.java` и текущую админскую роль,
-скопировать форму записи политик.
+Ближайший шаг: независимая проверка по разделу «Независимая проверка» —
+полный `./gradlew :app:test` (C6) и регрессии `TechClaimDeadlineIT`,
+`NsiClaimTermEditRoleIT`; проверка идёт после проверки T02.
 Препятствия: нет.

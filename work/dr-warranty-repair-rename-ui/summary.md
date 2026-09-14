@@ -18,6 +18,20 @@
 Гейт 2 на момент закрытия: `./gradlew :app:test` — 1348 passing, 12
 pending, 0 failing.
 
+## Состояние после закрытия (2026-09-14)
+
+T09 остаётся исторически проверенным, но его кода в рабочем дереве нет:
+правки `sso-plagin` (`SsoSynchronizingOidcUserMapper` с повтором при
+конфликте версий и striped-замками, тесты аддона, `sso-plagin.gradle`)
+лежат в `stash@{1}` («sso-oplimistic-log-with-auth») и отложены
+пользователем вместе со всей работой по OIDC. Тест
+`app/src/test/java/ru/fgk/ws/app/sso/SsoOidcUserMapperConcurrencyIT.java`
+(коммит `dd71c094f`) снят из дерева, чтобы не краснить `:app:test`;
+возврат — `git checkout dd71c094f -- <путь>` вместе с `git stash pop
+"stash@{1}"`. Основание: [Q02](../legal-tech-claim-ui/questions/Q02.md)
+новой работы. Гейт «1348 passing, 0 failing» относится к состоянию на
+момент закрытия, когда код T09 был в дереве.
+
 ## Частично сделано (не проверялось независимо)
 
 - T02: view `dr_v_warranty_repair_claim` (104 колонки: поля четырёх таблиц и
