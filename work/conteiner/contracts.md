@@ -236,6 +236,128 @@
   остались там, где подпись ссылки другая: `model.tenty/dugi/trosy/vent` и
   `size.widthF`.
 
+Уточнено при реализации T04 — освидетельствования:
+
+- Экраны: `container/view/containersurvey/` (`cnt_ContainerSurvey.list|detail`,
+  маршруты `container-surveys`, `container-surveys/:id`) и вкладка
+  `container/view/fragment/containersurvey/ContainerSurveyFragment`
+  (`surveysTab` в `container-detail-view.xml`).
+- **`propertyFilter` по пути `container.<поле>` требует явного `parameterName`.**
+  По умолчанию имя параметра получается из пути свойства
+  (`container.contNum` → `container_contNum…`), а префикс `container_`
+  зарезервирован `dataLoadCoordinator` под ссылку на data container: он берёт
+  остаток имени за имя контейнера, не находит его и роняет открытие экрана
+  (`IllegalArgumentException: Container 'contNum…' not found`). В фильтре по
+  номеру контейнера стоит `parameterName="containerContNumFilter"`. То же
+  ждёт список ремонтов в T07.
+- **Форму с просмотром файла кладём в `scroller`.** В `split` форма выше
+  доступной высоты выезжает за его пределы и накрывает панель кнопок: кнопка
+  «Загрузить» оказывается под «OK» и не нажимается. Левая половина
+  `container-survey-detail-view.xml` — `scroller` с
+  `scrollBarsDirection="VERTICAL"`, внутри него `formLayout`.
+- **Read-only контейнер включает не форма, а точка входа.** Форма одна на оба
+  сценария; фрагмент вкладки открывает диалог с
+  `.withViewConfigurer(view -> view.setContainerReadOnly(true))`, из списка
+  контейнер выбирается и меняется свободно (перенос записи). Конфигурер
+  отрабатывает до `BeforeShowEvent`, поэтому флаг успевает примениться.
+- Просмотр и скачивание акта — в самой форме: справа от полей фрагмент
+  `DisplayFile`, под кнопками «OK»/«Отмена» — «Скачать акт». Обновляется по
+  `ItemPropertyChangeEvent` атрибута `surveyAct`, поэтому замена файла видна
+  сразу. Дублировать просмотр во вкладке и в списке не стали: запись
+  открывается формой из обеих точек входа.
+- Никакой связи с `nextSurveyDate` контейнера нет: ни listener-а, ни кода во
+  view. Закрыто тестом `ContainerSurveyIT`.
+
+Уточнено при реализации T06 — договоры, гарантийные условия и акты:
+
+- Экраны: `container/view/containercontract/` (`cnt_ContainerContract.list|detail`,
+  маршруты `container-contracts`, `container-contracts/:id`),
+  `container/view/containerwarranty/` (`cnt_ContainerWarranty.list|detail`,
+  `container-warranties`), `container/view/containeract/`
+  (`cnt_ContainerAct.list|detail`, `container-acts`). Все три списка —
+  `@LookupComponent`, как требует T07.
+- Карточка договора держит грид условий на лоадере с ручным `:contractId` и
+  показывает его только у сохранённого договора; до первого сохранения вместо
+  грида подсказка, а рядом с «OK» есть отдельная кнопка «Сохранить» — то же
+  решение, что в карточке контейнера.
+- **Detail view обязан иметь `<dataLoadCoordinator auto="true"/>`.** Без него
+  instance-лоадер не загружается: `StandardDetailView.initExistingEntity`
+  только проставляет лоадеру id, а сам вызов `load()` делает координатор.
+  Форма при этом открывается с пустым контейнером и падает на первом же
+  `getEditedEntity()`. Ручные `:contractId`/`:actId` координатор не трогает:
+  `AbstractDataLoadCoordinator#configureAutomatically` вешает триггер по
+  умолчанию только на лоадеры, у запросов которых вообще нет параметров.
+  Контроллеры всё равно берут запись через `getEditedEntityOrNull()`.
+- Состав акта — не `@Composition`, а обычный collection container на лоадере
+  **без** `readOnly`: связи попадают в `DataContext` формы, создаются через
+  `dataContext.create(...)` и уходят в БД вместе с шапкой одним
+  `SaveContext`. Проверено и тестом `ContainerActIT`, и в браузере: у нового
+  акта `INSERT INTO cnt_act` и `INSERT INTO cnt_act_container` идут в одной
+  транзакции, `act_id` подставляется сгенерированный.
+- Связь, уже записанную в БД, кнопка «Убрать контейнер» помечает на удаление не
+  сразу, а в `BeforeSaveEvent`: контейнер, снятый и добавленный обратно в одном
+  сеансе, возвращается в состав без второй строки. Новая (ещё не сохранённая)
+  связь убирается из контекста сразу.
+- **Ограничение.** Уникальный индекс `cnt_act_container(act_id, container_id)`
+  не учитывает мягкое удаление, поэтому контейнер, снятый с акта и сохранённый,
+  в тот же акт повторно не добавляется: вставка упирается в индекс. Отказ
+  объяснён ключом
+  `databaseUniqueConstraintViolation.IDX_CNT_ACT_CONTAINER_ACT_ID_CONTAINER_ID`
+  («Этот контейнер уже включён в акт»). Если повторное включение нужно, это
+  отдельное решение: частичный уникальный индекс `where deleted_date is null`
+  либо восстановление мягко удалённой связи.
+- В форме условия поле «ИД» read-only и с явным `required="false"`: колонка
+  `id` объявлена NOT NULL, поэтому иначе Jmix помечает поле обязательным и у
+  новой записи оно выглядит как незаполненное обязательное.
+- Multi-select в lookup контейнеров не включён: `cnt_Container.list` — область
+  T03, метода вроде `setMultiSelect()` у него нет, а лезть в его внутренности
+  из формы акта нет смысла. Контейнеры добавляются по одному.
+
+Уточнено при реализации T07 — ремонты и вкладка «Акты»:
+
+- Экраны: `container/view/containerrepair/` (`cnt_ContainerRepair.list|detail`,
+  маршруты `container-repairs`, `container-repairs/:id`) и два фрагмента
+  карточки: `container/view/fragment/containerrepair/ContainerRepairFragment`
+  (`repairsTab`) и `container/view/fragment/containeract/ContainerActFragment`
+  (`actsTab`). Список ремонтов — `@LookupComponent`, как и остальные списки
+  раздела.
+- Форма ремонта разложена на шесть групп `details` (ремонт; даты и станция
+  браковки; исполнитель, договор и гарантия; проверка документов; стоимости;
+  уведомление завода) плюс документ. Левая половина `split` — `scroller`, как
+  в форме освидетельствования: иначе длинная форма накрывает панель кнопок.
+- **Поиск условия гарантии идёт по ИД.** Пользователи знают условия по числу
+  (385331, 786974, 786975), поэтому `itemsQuery` обоих полей гарантии —
+  `select e from cnt_ContainerWarranty e left join e.contract c where
+  concat(e.id, '') like :searchString escape '\' or c.contractNum like
+  :searchString escape '\' order by e.id`. `concat(e.id, '')` даёт сравнение
+  числового id как строки, а `left join` оставляет в списке условия без
+  договора. Запрос закрыт тестом `ContainerRepairIT`, потому что его
+  работоспособность зависит от БД, а не от компиляции.
+- **Вкладка «Акты» показывает связи, а не акты.** Строка грида — это
+  `ContainerActLink` с колонками `act.*`: так «Убрать из контейнера» и «Удалить
+  акт» работают ровно с той записью, которую видит пользователь.
+- Операции вкладки вынесены в `container/service/ContainerActService`:
+  `linkContainer`, `unlinkContainer`, `deleteActWithLinks`, `containerNumbers`.
+  Удаление акта снимает сначала связи, потом сам акт, всё в одной транзакции:
+  на `ContainerActLink.act` стоит `DeletePolicy.DENY`, поэтому акт с живыми
+  связями не удаляется.
+- **Ограничение T06 про повторное включение снятого контейнера снято на уровне
+  сервиса.** `linkContainer` ищет связь пары с выключенным мягким удалением и
+  восстанавливает найденную (обнуляет `deletedDate`/`deletedBy`) вместо
+  вставки второй строки — уникальный индекс `cnt_act_container(act_id,
+  container_id)` не различает удалённые. Частичный индекс не понадобился, сам
+  индекс не менялся. Для формы акта T06 (кнопка «Убрать контейнер» + повторное
+  добавление между сеансами) ограничение остаётся в силе.
+- Форма акта T06 получила публичный `setPreselectedContainer(Container)`:
+  вкладка «Акты» открывает её через `withViewConfigurer`, и контейнер попадает
+  в состав нового акта до `BeforeShowEvent`. Связь живёт в `DataContext` формы,
+  поэтому отмена не оставляет ни акта, ни связи.
+- **Обеим основным ролям добавлен READ на `VStation`.** У формы ремонта три
+  независимые станции; без политики роли не прочитали бы ни одну — та же
+  история, что с `VOrgPassport` в T03.
+- Фильтр списка ремонтов по номеру контейнера использует
+  `parameterName="containerContNumFilter"` — по предупреждению T04.
+
 ## Файлы
 
 - Атрибуты `FileRef`, колонка `VARCHAR(1024)`; `fileStorageUploadField` с
