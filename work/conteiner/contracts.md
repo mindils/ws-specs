@@ -198,6 +198,44 @@
   связей одной транзакцией, предупреждение с перечнем других контейнеров).
 - Вкладка «История» — фрагмент EntityLog из T09 с параметрами entity-name и id.
 
+Уточнено при реализации T03 — рабочий контракт подключения вкладки для T04 и T07:
+
+- Карточка — `ru.fgk.ws.app.container.view.container.ContainerDetailView`,
+  дескриптор `container-detail-view.xml`, id контейнера данных — `containerDc`
+  (`<instance>` класса `Container`, `@EditedEntityContainer("containerDc")`).
+- `tabSheet` называется `containerTabSheet`; существующие вкладки —
+  `propertiesTab`, `filesTab`, `historyTab`. Новые вкладки добавляются на свои
+  места по комментариям в XML: `repairsTab` и `actsTab` (T07), `surveysTab`
+  (T04) — между `propertiesTab` и `filesTab`, в порядке Ремонты,
+  Освидетельствования, Акты.
+- Вкладка-фрагмент получает `<property name="containerDc" value="containerDc"
+  type="CONTAINER_REF"/>`; в контроллере это сеттер
+  `public void setContainerDc(InstanceContainer<Container> containerDc)`.
+  Фрагмент обязан иметь публичный `refresh()`: карточка вызывает его у всех
+  вкладок после первого сохранения (`AfterSaveEvent`), когда id контейнера
+  только появился.
+- Фрагмент грузится сам: `@Subscribe(target = Target.HOST_CONTROLLER)` на
+  `View.BeforeShowEvent` → `refresh()`. `refresh()` берёт
+  `containerDc.getItemOrNull().getId()`; если id нет, он очищает контейнер
+  (`dc.setItems(List.of())`) и лоадер не трогает — иначе лоадер с ручным
+  `:containerId` упал бы на незаданном параметре.
+- Пока контейнер не сохранён, карточка не показывает `containerTabSheet`
+  вообще и выводит вместо него подсказку `tabsHint`: `JmixTabSheet` не
+  реализует `HasEnabled`, а неработающих вкладок пользователю показывать
+  незачем.
+- **Отклонение от `withParentDataContext`.** Диалог дочерней формы открывается
+  БЕЗ `withParentDataContext`: он сохраняет запись в БД сам, после чего
+  фрагмент перечитывает свой лоадер. С родительским data context запись до
+  сохранения карточки в БД не попадает, и перезагрузка лоадера её потеряла бы.
+  Контейнер передаётся инициализатором: `.withInitializer(e ->
+  e.setContainer(container))` для новой записи, `.editEntity(selected)` для
+  правки. В форме поле контейнера — `entityComboBox` c `readOnly="true"`.
+- Наименование типа контейнера отдельным виртуальным полем не выводится:
+  `@InstanceName` у `CntContainerType` — это `typeName`, поэтому и колонка
+  `type`, и `entityComboBox` показывают именно название. Виртуальные поля
+  остались там, где подпись ссылки другая: `model.tenty/dugi/trosy/vent` и
+  `size.widthF`.
+
 ## Файлы
 
 - Атрибуты `FileRef`, колонка `VARCHAR(1024)`; `fileStorageUploadField` с
@@ -226,6 +264,22 @@
   освидетельствования/договора.
 - `entityLog.view` (стандартный экран аддона) — пункт в `other_menu` для
   администраторов; политики не расширяются для обычных ролей.
+
+Уточнено при реализации T09:
+
+- Под журнал попадают хранимые несистемные атрибуты — ровно те, что предлагает
+  экран `entityLog.view`. Системные (`id`, `version`, аудит создания/изменения,
+  мягкое удаление) аддон отбрасывает сам. Вычисляемые `@JmixProperty`-подписи
+  (`linkName`, `repairName`, `surveyName`, `warrantyName`) в настройку не
+  входят: они не хранятся, целиком выводятся из уже журналируемых атрибутов, а
+  их вычисление внутри аддона тянет ссылки, которых в момент удаления может не
+  быть в fetch plan.
+- `jmix.audit.enabled` по умолчанию `true`, отдельной настройки в
+  `application.properties` не потребовалось.
+- Хост фрагмента задаёт цель `setLogTarget(entityName, entityId)` (либо
+  `setEntityName` / `setEntityId` + `refresh()`) и вызывает `refresh()` при
+  каждом обновлении записи. Без заданной цели гриды пустые — так вкладка
+  «История» работает и на ещё не сохранённой записи.
 
 ## Роли, меню, view-id
 

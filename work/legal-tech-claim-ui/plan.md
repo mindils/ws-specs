@@ -1,6 +1,8 @@
 # Претензии по технологическим неисправностям: экраны, роли, сроки
 
-Состояние: active
+Состояние: closed
+Итог: [summary.md](summary.md)
+Дата закрытия: 2026-09-15
 Предыдущая работа: [dr-warranty-repair-rename-ui](../dr-warranty-repair-rename-ui/summary.md)
 Дата согласования: 2026-09-14
 
