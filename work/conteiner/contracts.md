@@ -46,10 +46,16 @@
   `cnt_act_container(act_id, container_id)`.
 - На каждой `@ManyToOne` ссылке на контейнер, справочник, договор, гарантию и
   вид акта — `@OnDeleteInverse(DeletePolicy.DENY)`: удаление записи, на которую
-  ссылаются, отклоняется. T01 проверяет по документации Jmix
-  (`jmix-verify-api-symbol`), что DENY учитывает soft delete ссылающихся
-  записей; если удалённые дети продолжают блокировать — фиксирует это в
-  contracts.md и добавляет сервисную проверку по неудалённым ссылкам.
+  ссылаются, отклоняется. **Проверено в T01: DENY учитывает soft delete, и
+  сервисная проверка не нужна.** Основание — исходники Jmix 3.0.1:
+  `io.jmix.data.impl.DeletePolicyProcessor#referenceExists` считает ссылающиеся
+  записи обычным JPQL (`select count(e) from <Entity> e where e.<prop>.id = ?1`),
+  а `io.jmix.eclipselink.impl.mapping.SoftDeleteAdditionalCriteriaProvider`
+  добавляет каждому soft-deletable дескриптору критерий
+  `this.<deletedDate> is null`. Поэтому мягко удалённый ребёнок в счёт не
+  попадает и родителя не блокирует. Поведение закреплено тестом
+  `ContainerDeletePolicyIT`: удаление отклоняется, пока ребёнок жив, и проходит
+  после его мягкого удаления.
 - Ссылки на существующее НСИ: `VOrgPassport` (`Long id`, подпись `shortname`),
   `VStation` (`Integer id`, подпись `getFillName()`), дорога — через
   `VStation.rw`. Их не менять и не копировать.
@@ -118,6 +124,33 @@
 Не создаются: `cnt_operation`, `cnt_invoice`, `cnt_invoice_container`
 ([Q01](questions/Q01.md)), `cnt_entity_history`, копия `data_file`,
 `remontnie_predpriyatiya`.
+
+### Фактические имена (T01)
+
+Бизнес-состав не менялся; ниже отклонения фактической реализации от текста
+матрицы.
+
+- Договор и гарантийное условие — это основные entity `ContainerContract`
+  (`cnt_contract`) и `ContainerWarranty` (`cnt_warranty`). В колонке «Поля и
+  связи» они названы `CntContract` и `CntWarranty`; читать как ссылки на эти
+  entity.
+- Java-имена ссылочных атрибутов короче имён колонок: `owner_org_id` →
+  `owner`, `type_id` → `type`, `size_id` → `size`, `gen_char_id` → `genChar`,
+  `org_id` → `org`, `defect_id` → `defect`, `warr_begin_id` → `warrBegin`,
+  `cont_type_id` → `contType`. Остальные — camelCase от имени колонки
+  (`rep_by_warr_id` → `repByWarr`, `rep_st_instr_id` → `repStInstr`,
+  `width_f` → `widthF`, `height_txt` → `heightTxt` и так далее).
+- `@InstanceName` там, где подходящего поля нет, — метод с
+  `@DependsOnProperties`: `ContainerSurvey.getSurveyName()` и
+  `ContainerRepair.getRepairName()` дают `<id> — <дата>`,
+  `ContainerActLink.getLinkName()` — `<actNum> / <contNum>`,
+  `ContainerWarranty.getWarrantyName()` — формат из раздела «Подписи и lookup».
+  У `ContainerProperty` подпись — `propValue`, у `ContainerFile` — `fileName`.
+- В `cnt_act_container` уникальный индекс называется
+  `idx_cnt_act_container_act_id_container_id`. Отдельный индекс по `act_id` не
+  создаётся: он совпадает с ведущей колонкой уникального индекса и был бы
+  дублем. Индекс по `container_id` создан отдельно.
+- `pk_<table>` — имя первичного ключа во всех 22 таблицах.
 
 ## Подписи и lookup
 

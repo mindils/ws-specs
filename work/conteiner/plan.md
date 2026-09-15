@@ -191,3 +191,6 @@ UI-тасков — `playwright-cli`; без браузера писать `rend
 - [Q01](questions/Q01.md) — операции и накладные (deferred).
 - [Q02](questions/Q02.md) — выгрузки для начальных данных (waiting_user,
   блокирует только T10).
+- [Q03](questions/Q03.md) — на чистой схеме контекст не поднимается из-за
+  чужого changelog-а `tbl-pt_repair_packet.xml` (waiting_user, не блокирует;
+  обходится одной SQL-командой, указанной в вопросе).
