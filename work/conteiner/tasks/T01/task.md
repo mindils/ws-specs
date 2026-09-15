@@ -1,12 +1,12 @@
 # T01 — Модель, миграции, инварианты
 
-Статус: todo
+Статус: done
 План: [plan.md](../../plan.md)
 Зависимости: нет
 Сложность: medium — 22 entity по образцам проекта, но новый домен, listener
 нормализации и проверка DENY с soft delete.
 Сложность проверки: medium — интеграционные тесты с живой БД, без UI.
-Актуальная проверка: нет
+Актуальная проверка: [checks/001.md](checks/001.md)
 
 ## Коротко
 
@@ -100,11 +100,18 @@ entity-ключи в `app/src/main/resources/ru/fgk/ws/app/messages_ru.propertie
 
 ## Прогресс и продолжение
 
-- [ ] Сверить матрицу с проектом, проверить типы PK НСИ и DENY при soft delete.
-- [ ] Entity, changelog-и, messages.
-- [ ] Listener номера, `EntityCopySupport`, тесты.
-- [ ] Передать результат на независимую проверку.
+- [x] Сверить матрицу с проектом, проверить типы PK НСИ и DENY при soft delete.
+      `VOrgPassport.id` — `Long`, `VStation.id` — `Integer`. DENY считает
+      ссылающиеся записи обычным JPQL, а soft-deletable entity получает критерий
+      `deletedDate is null`, поэтому удалённые дети не блокируют родителя —
+      сервисная проверка не нужна. Записано в contracts.md.
+- [x] Entity (22), changelog-и (22), messages (319 ключей).
+- [x] Listener номера, `EntityCopySupport`, тесты (13 зелёных, прогон повторён).
+- [x] Независимая проверка — [checks/001.md](checks/001.md) (pass).
 
-Ближайший шаг: прочитать contracts.md и образцы entity/changelog, проверить
-семантику `@OnDeleteInverse(DENY)` с soft delete.
-Препятствия: нет.
+Ближайший шаг: выполнение таска [T02](../T02/task.md) или параллельного
+[T09](../T09/task.md) исполнителем `task-execute`.
+Препятствия: нет. Смежное: [Q03](../../questions/Q03.md) — чужой changelog
+`tbl-pt_repair_packet.xml` не создаёт колонку `pack_checked_code` на чистой
+схеме, из-за чего контекст не поднимается. Дефект не относится к T01, обойдён
+правкой схемы `main_rvk_ws` руками; вопрос неблокирующий.
