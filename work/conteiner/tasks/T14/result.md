@@ -75,6 +75,10 @@ C1 — коды `200` и `Content-Type: image/png` без входа. C2 — в�
 страницы без сессии по-прежнему редиректят на Keycloak, класс
 `ru.fgk.ws.app.container.security.ContainerRolesTest` зелёный.
 
+Состояние кода: правка лежит незакоммиченной в рабочей копии worktree
+(`git status` в `cyan-fennel/rvk-ws` показывает изменённым только
+`IframeSecurity.java` поверх коммита `1ad658d3f`).
+
 Изоляция: порт 8082 и схема `main_rvk_ws` — параметры worktree; `:app:test` и
 браузер занимают общую БД и gradle daemon, поэтому проверка T14 идёт первой в
 очереди пересмотра (T14 → T11 → T12 → T13). Свой процесс `bootRun` погасить
