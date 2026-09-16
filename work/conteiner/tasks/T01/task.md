@@ -1,12 +1,12 @@
 # T01 — Модель, миграции, инварианты
 
-Статус: done
+Статус: done — итерация 2 принята проверкой [checks/002.md](checks/002.md)
 План: [plan.md](../../plan.md)
 Зависимости: нет
 Сложность: medium — 22 entity по образцам проекта, но новый домен, listener
 нормализации и проверка DENY с soft delete.
 Сложность проверки: medium — интеграционные тесты с живой БД, без UI.
-Актуальная проверка: [checks/001.md](checks/001.md)
+Актуальная проверка: [checks/002.md](checks/002.md)
 
 ## Коротко
 
@@ -34,7 +34,9 @@ changelog `020-dr_diadoc_wag_oper_repair_contract.xml`): не включать �
 `app/src/main/resources/ru/fgk/ws/app/liquibase/changelog/01-tbl/tbl-cnt_*.xml`,
 entity-ключи в `app/src/main/resources/ru/fgk/ws/app/messages_ru.properties`,
 тесты в `app/src/test/java/ru/fgk/ws/app/container/` или `it/`. Не трогать
-`migration/ws_store`, существующие НСИ-entity, чужие changelog-и.
+`migration/ws_store`, существующие НСИ-entity, чужие changelog-и — с
+единственным именованным исключением по [Q03](../../questions/Q03.md):
+`app/src/main/resources/ru/fgk/ws/app/liquibase/changelog/01-tbl/tbl-pt_repair_packet.xml`.
 
 Общие ресурсы: PostgreSQL (схема worktree), gradle daemon. Первый таск — других
 параллельных нет.
@@ -64,6 +66,16 @@ entity-ключи в `app/src/main/resources/ru/fgk/ws/app/messages_ru.propertie
 - Messages: подписи entity и всех атрибутов на русском (полностью
   квалифицированные ключи в `messages_ru.properties`).
 - Все созданные файлы проверить на непустоту.
+- Итерация 2 ([Q03](../../questions/Q03.md)): в
+  `01-tbl/tbl-pt_repair_packet.xml` добавить `PACK_CHECKED_CODE` типа `INT` с
+  remarks из changeSet `16` в основной `createTable` (changeSet `1`) и
+  отдельный `addColumn` со следующим свободным id в конце файла, с
+  `preConditions onFail="MARK_RAN"` →
+  `<not><columnExists tableName="pt_repair_packet" columnName="pack_checked_code"/></not>`.
+  ChangeSet `17` не удалять: на старых базах он всё ещё переименовывает
+  `status`. Перед проверкой снять ручную колонку из схемы worktree
+  (`alter table <схема>.pt_repair_packet drop column pack_checked_code`) или
+  развернуть новую пустую схему — иначе правка не проверена.
 
 ## Критерии приёмки
 
@@ -98,6 +110,15 @@ entity-ключи в `app/src/main/resources/ru/fgk/ws/app/messages_ru.propertie
 сценарием, включая удалённый контейнер и повтор номера. Проверить messages: у
 каждого атрибута есть русская подпись (нет сырых ключей в Entity Inspector).
 
+Итерация 2 — только миграционная часть (C1): развернуть **пустую** схему с
+нуля, убедиться, что контекст поднимается и `jmix_Liquibase` не падает, что
+`pack_checked_code` есть в `pt_repair_packet`, что повторный прогон
+идемпотентен, а на схеме `main` changeSet `1` и новый `addColumn` получили
+MARK_RAN; плюс `./gradlew :app:test`. Критерии C2–C6 подтверждены отчётом
+[checks/001.md](checks/001.md) на неизменившемся коде entity, listener и
+messages и не переигрываются, если правка не выходит за пределы
+`tbl-pt_repair_packet.xml`.
+
 ## Прогресс и продолжение
 
 - [x] Сверить матрицу с проектом, проверить типы PK НСИ и DENY при soft delete.
@@ -107,11 +128,18 @@ entity-ключи в `app/src/main/resources/ru/fgk/ws/app/messages_ru.propertie
       сервисная проверка не нужна. Записано в contracts.md.
 - [x] Entity (22), changelog-и (22), messages (319 ключей).
 - [x] Listener номера, `EntityCopySupport`, тесты (13 зелёных, прогон повторён).
-- [x] Независимая проверка — [checks/001.md](checks/001.md) (pass).
+- [x] Независимая проверка итерации 1 — [checks/001.md](checks/001.md) (pass).
+- [x] Итерация 2: правка `tbl-pt_repair_packet.xml` по
+      [Q03](../../questions/Q03.md) — `PACK_CHECKED_CODE INT` с remarks в
+      `createTable` changeSet `1` и новый changeSet `23` (author `dr`) с
+      `addColumn` и preConditions; changeSet `17` не тронут.
+- [x] Проверено на пустой схеме `main_t01i2` (контекст поднимается, колонка
+      приходит из `createTable`, changeSet `23` MARK_RAN, повторный прогон
+      идемпотентен) и на `main_rvk_ws` после снятия ручной колонки (changeSet
+      `1` RERAN, changeSet `23` EXECUTED). Временная схема удалена, значения
+      тестовых строк восстановлены.
+- [x] Независимая проверка итерации 2 — [checks/002.md](checks/002.md) (pass).
+      Таск закрыт.
 
-Ближайший шаг: выполнение таска [T02](../T02/task.md) или параллельного
-[T09](../T09/task.md) исполнителем `task-execute`.
-Препятствия: нет. Смежное: [Q03](../../questions/Q03.md) — чужой changelog
-`tbl-pt_repair_packet.xml` не создаёт колонку `pack_checked_code` на чистой
-схеме, из-за чего контекст не поднимается. Дефект не относится к T01, обойдён
-правкой схемы `main_rvk_ws` руками; вопрос неблокирующий.
+Ближайший шаг: выполнение `task-close` для закрытия всей работы и подготовки summary.md.
+Препятствия: нет.

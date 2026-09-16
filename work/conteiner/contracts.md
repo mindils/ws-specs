@@ -30,9 +30,10 @@
   `cnt_<Entity>.list` / `cnt_<Entity>.detail`. Changelog-и
   `app/src/main/resources/ru/fgk/ws/app/liquibase/changelog/01-tbl/tbl-cnt_<table>.xml`,
   author `cnt`, preConditions на каждый changeSet,
-  `objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"`. Начальные данные —
-  `04-data/cnt/*.csv` и `04-data/cnt_seed.xml`; настройка EntityLog —
-  `04-data/cnt_entity_log.xml`.
+  `objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS"`. Настройка EntityLog —
+  `04-data/cnt_entity_log.xml`. Начальные данные из старой ЕРК
+  (`04-data/cnt/*.csv`, `04-data/cnt_seed.xml`) в эту работу не входят —
+  отдельная работа по [Q02](questions/Q02.md).
 - Каждая `cnt_*` entity: `@Id @GeneratedValue(strategy = IDENTITY) Long id`;
   `@Version Integer version`; `@CreatedBy/@CreatedDate/@LastModifiedBy/
   @LastModifiedDate` (`String`, `OffsetDateTime`); `@DeletedBy/@DeletedDate`
@@ -114,12 +115,14 @@
 | `cnt_defect` | `CntDefect` | `defect_name` varchar(255), `defect_reason_id` → `CntDefectReason` | `cont_defect` |
 | `cnt_act_type` | `CntActType` | `act_type_name` varchar(255), `incl_sign` bigint | `eri_act_type` |
 | `cnt_contract_type` | `CntContractType` | `contract_type_name` varchar(255) | `eri_contract_type` |
-| `cnt_warranty_type` | `CntWarrantyType` | `warr_type_name` varchar(255); структура уточняется по DDL из [Q02](questions/Q02.md) | `warranty_type` |
+| `cnt_warranty_type` | `CntWarrantyType` | `warr_type_name` varchar(255) | `warranty_type` |
 
 Существующие справочники проекта проверены и не подходят: `VDamageType`,
 `NsiNvDefectGroup`, `RejectReason` — вагонные неисправности; `DiadocDocumentType`
 — типы документов Диадок; отдельных справочников типов договоров, актов, файлов
-нет. Все 13 создаются заново и наполняются в T10.
+нет. Все 13 создаются заново и заполняются из UI; перенос значений старой ЕРК —
+отдельная работа ([Q02](questions/Q02.md)), там же возможное расширение
+`cnt_warranty_type` по DDL старой таблицы.
 
 Не создаются: `cnt_operation`, `cnt_invoice`, `cnt_invoice_container`
 ([Q01](questions/Q01.md)), `cnt_entity_history`, копия `data_file`,
@@ -222,7 +225,8 @@
 - Пока контейнер не сохранён, карточка не показывает `containerTabSheet`
   вообще и выводит вместо него подсказку `tabsHint`: `JmixTabSheet` не
   реализует `HasEnabled`, а неработающих вкладок пользователю показывать
-  незачем.
+  незачем. **Устарело с 2026-09-16** — см. «Пересмотр UI 2026-09-16»:
+  tabSheet виден всегда, неактивны отдельные `Tab` (T11).
 - **Отклонение от `withParentDataContext`.** Диалог дочерней формы открывается
   БЕЗ `withParentDataContext`: он сохраняет запись в БД сам, после чего
   фрагмент перечитывает свой лоадер. С родительским data context запись до
@@ -254,7 +258,9 @@
   доступной высоты выезжает за его пределы и накрывает панель кнопок: кнопка
   «Загрузить» оказывается под «OK» и не нажимается. Левая половина
   `container-survey-detail-view.xml` — `scroller` с
-  `scrollBarsDirection="VERTICAL"`, внутри него `formLayout`.
+  `scrollBarsDirection="VERTICAL"`, внутри него `formLayout`. **Устарело с
+  2026-09-16** — `split` убран, панель просмотра видна только при файле, см.
+  «Пересмотр UI 2026-09-16» (T13).
 - **Read-only контейнер включает не форма, а точка входа.** Форма одна на оба
   сценария; фрагмент вкладки открывает диалог с
   `.withViewConfigurer(view -> view.setContainerReadOnly(true))`, из списка
@@ -325,6 +331,8 @@
   браковки; исполнитель, договор и гарантия; проверка документов; стоимости;
   уведомление завода) плюс документ. Левая половина `split` — `scroller`, как
   в форме освидетельствования: иначе длинная форма накрывает панель кнопок.
+  **Устарело с 2026-09-16** — пять вкладок, см. «Пересмотр UI 2026-09-16»
+  (T12).
 - **Поиск условия гарантии идёт по ИД.** Пользователи знают условия по числу
   (385331, 786974, 786975), поэтому `itemsQuery` обоих полей гарантии —
   `select e from cnt_ContainerWarranty e left join e.contract c where
@@ -357,6 +365,16 @@
   история, что с `VOrgPassport` в T03.
 - Фильтр списка ремонтов по номеру контейнера использует
   `parameterName="containerContNumFilter"` — по предупреждению T04.
+
+Уточнено при реализации T08 — подписи несохранённых записей:
+
+- `@InstanceName`-методы `ContainerRepair.getRepairName()`,
+  `ContainerSurvey.getSurveyName()` и `ContainerWarranty.getWarrantyName()`
+  печатают ИД только тогда, когда он уже есть. У сохранённой записи формат
+  прежний — «ИД — …», по нему и ищут условия гарантии; у новой записи остаётся
+  одна вторая часть. Иначе пользователь видел бы «null — 2026-08-07» в
+  заголовке диалога и в сообщении об успешном сохранении: оно строится по
+  экземпляру формы до того, как сгенерированный ИД до него доходит.
 
 ## Файлы
 
@@ -407,13 +425,22 @@
 
 | Роль | code | Права |
 |---|---|---|
-| `ContainerReadRole` | `container-read` | READ + VIEW атрибутов всех `cnt_*` и `audit_EntityLog`/`EntityLogAttr`; view/menu всех list/detail раздела «Контейнеры» и справочников (только чтение); экспорт |
-| `ContainerEditRole` | `container-edit` | Как read + CREATE/UPDATE/DELETE и MODIFY атрибутов `Container`, `ContainerProperty`, `ContainerFile`, `ContainerSurvey`, `ContainerRepair`, `ContainerContract`, `ContainerWarranty`, `ContainerAct`, `ContainerActLink`; справочники только READ |
-| `ContainerNsiEditRole` | `container-nsi-edit` | READ основных записей не даёт; CRUD + MODIFY атрибутов 13 справочников, их list/detail и menu |
+| `ContainerReadRole` | `container-read` | READ + VIEW атрибутов всех `cnt_*` и `audit_EntityLog`/`EntityLogAttr`; view/menu всех list/detail раздела «Контейнеры» и справочников (только чтение); фоновый Excel-экспорт через `extends AsyncExportRole` |
+| `ContainerEditRole` | `container-edit` | Как read + CREATE/UPDATE/DELETE и MODIFY атрибутов `Container`, `ContainerProperty`, `ContainerFile`, `ContainerSurvey`, `ContainerRepair`, `ContainerContract`, `ContainerWarranty`, `ContainerAct`, `ContainerActLink`; справочники только READ; фоновый Excel-экспорт через `extends AsyncExportRole` |
+| `ContainerNsiEditRole` | `container-nsi-edit` | READ основных записей не даёт; CRUD + MODIFY атрибутов 13 справочников, их list/detail и menu; фоновый Excel-экспорт через `extends AsyncExportRole` |
 
 Роли назначаются совместно; существующим пользователям автоматически не
 назначаются. Образец: `da/security/DaContractReadRole.java`,
 `DaContractEditRole.java`. Каждый UI-таск добавляет свои view-id в роли.
+
+Экспорт ([Q04](questions/Q04.md), 2026-09-15): политики на служебную entity
+`common_ExportTask` остаются только в `app/security/AsyncExportRole.java` —
+второго владельца в проекте не заводим. Роли раздела получают право
+наследованием: все три интерфейса объявляются как `extends AsyncExportRole`
+(образец — `WsUserRole.java`). Наследования между самими контейнерными ролями
+нет, поэтому `extends` пишется в каждой из трёх. Отдельно назначать
+`async-export-role` контейнерным пользователям не требуется; побочно роли
+получают view `common_ExportTask.list/detail` и пункт меню «Задачи экспорта».
 
 Меню (`app/src/main/resources/ru/fgk/ws/app/menu.xml`), ключи в
 `messages_ru.properties` с полной квалификацией пакета:
@@ -455,3 +482,116 @@ Detail view-id: `cnt_<Entity>.detail`; они же указываются в `@V
 
 Остальные поля необязательны. Правило пользователя: обязательность настраивают
 программисты в view, БД не ограничивает.
+
+## Пересмотр UI 2026-09-16
+
+Основание — замечания пользователя после приёмки
+([input/ui-review-2026-09-16.md](input/ui-review-2026-09-16.md)) и его ответы.
+Функциональность, entity, роли и меню не меняются. Общее правило для всех
+затронутых view: никаких `css="..."`, новых `classNames` и custom properties;
+компоновка — штатными атрибутами (`width`, `height`, `minHeight`, `maxWidth`,
+`expand`, `padding`, `spacing`, `alignItems`), стандартными `themeNames`
+(`small`, `compact`, `row-stripes`, `column-borders`) и уже используемыми
+классами `buttons-panel`, `text-secondary`. Общий фрагмент
+`common/view/displayfile/DisplayFile` не меняется; в контейнерном разделе его
+`displayNotFoundFile` больше не вызывается — вместо заглушки панель просто
+скрыта. Исполнители T11–T13 дописывают ниже фактические имена, если они
+отклонились.
+
+### Карточка контейнера (T11)
+
+- `layout` → `tabSheet id="containerTabSheet" width="100%" height="100%"
+  themeNames="small"` → `hbox id="detailActions"` (Сохранить, OK, Отмена).
+  Вкладки по порядку: `descriptionTab` («Описание», новая), `propertiesTab`,
+  `repairsTab`, `surveysTab`, `actsTab`, `filesTab`, `historyTab`. Содержимое
+  и контракт существующих вкладок (`containerDc` как `CONTAINER_REF`,
+  `refresh()` после сохранения) прежние. `details descriptionSection`,
+  `span tabsHint`, `vbox content` удаляются.
+- `descriptionTab`: `scroller` (100 %/100 %, `scrollBarsDirection="VERTICAL"`)
+  → `formLayout id="form" dataContainer="containerDc"`, responsiveSteps
+  1 / 2 (≥40em) / 3 (≥80em). Группы — подзаголовки `h5` с `colspan="3"`
+  внутри формы, ключи `containerDetailView.group.*`:
+  | Группа (ключ) | Поля (id) |
+  |---|---|
+  | «Идентификация» (`group.identity`) | `contNumField`*, `manufNumField`, `manufacturerField`, `ownerField` |
+  | «Модель, тип и размер» (`group.model`) | `modelField`, `modelTentyField`, `modelDugiField`, `modelTrosyField`, `modelVentField`, `typeField`, `sizeField`, `sizeWidthFField`, `genCharField` |
+  | «Массы и объём» (`group.mass`) | `maxGrossMassField`, `tareMassField`, `payloadField`, `capacityField` |
+  | «Даты и модернизация» (`group.dates`) | `constrDateField`, `nextSurveyDateField`, `roofUpgradeField`, `roofUpgradeDateField` |
+  Все id, `itemsQuery`, `actions`, `readOnly`, `required` полей сохраняются.
+- Новый контейнер (`entityStates.isNew`): `descriptionTab` выбрана, остальные
+  шесть вкладок `setEnabled(false)` — Vaadin `Tab` реализует `HasComponents`,
+  а тот наследует `HasEnabled`. Доступ к вкладке из контроллера —
+  `@ViewComponent("containerTabSheet.<tabId>") Tab` либо
+  `containerTabSheet.getSubPart("<tabId>")` (подтвердить по
+  `jmix-verify-api-symbol`). В `AfterSaveEvent` вкладки включаются; вызовы
+  `refresh()` фрагментов и `historyFragment.setLogTarget` остаются. Никакого
+  текста-подсказки и tooltip.
+- Messages: `containerDetailView.tab.description=Описание`,
+  `containerDetailView.group.identity|model|mass|dates`; ключи
+  `containerDetailView.description` и `containerDetailView.tabsHint`
+  удаляются.
+- `ContainerRegistryViewsUiTest` проверяет состояние вкладок у нового и
+  сохранённого контейнера.
+
+### Форма ремонта (T12)
+
+- `layout` → `tabSheet id="repairTabSheet" width="100%" height="100%"
+  themeNames="small"` → `hbox detailActions` (OK, Отмена, Скачать документ).
+  `split repairSplit`, `scroller formScroller`, `vbox formSections` и все
+  `details` удаляются.
+- Каждая вкладка: `scroller` → `formLayout` (`dataContainer=
+  "containerRepairDc"`, 1 / 2 колонки при ≥40em); подзаголовки `h5` с
+  `colspan="2"`. Все id полей, `itemsQuery`, `actions`, `required`,
+  `readOnly` — прежние.
+  | Вкладка (id, ключ) | Поля (id) |
+  |---|---|
+  | `repairTab` «Ремонт» (`tab.repair`) | `idField`, `containerField`*, `repairTypeField`, `defectReasonField`, `defectField`, `commentField`, `roofUpgradeField`, `rejectDateField`*, `rejectStField`, `departDateField`, `dateBeginField`, `dateEndField`, `returnDateField`, `dateNextField` |
+  | `contractTab` «Исполнитель и договор» (`tab.contract`) | `orgField`, `repContractField`, `repStField`, `repByWarrField`, `warrOnRepField` |
+  | `documentsTab` «Документы и стоимость» (`tab.documents`) | `h5` `section.documents`: `docsSubmissionDateField`, `docsVerificationDateField`, `docsVerificationResultField`, `rejectionReasonField`; `h5` `section.costs`: `repCostField`, `vatField`, `vatRubField`, `costWithVatField` |
+  | `manufacturerTab` «Уведомление завода» (`tab.manufacturer`) | `manufNotifDateField`, `repStInstrField`, `manufAnswDateField`, `manufReNotifDateField` |
+  | `fileTab` «Документ» (`tab.file`) | `vbox` 100 %/100 %: `documentField` (`maxWidth` ≈ 40em), под ним `fragment displayFile` на оставшуюся высоту, `visible` только при `document != null` |
+- Просмотр: без файла `displayFile.setVisible(false)` и `downloadButton`
+  неактивна; с файлом — `setVisible(true)` + `setFile`. Подписка на
+  `ItemPropertyChangeEvent("document")` остаётся — панель появляется сразу
+  после загрузки.
+- Валидация: при ошибках валидации перед сохранением форма переключается на
+  `repairTab` (`addValidationEventListener` /
+  `StandardDetailView.ValidationEvent` в `InitEvent`; символ подтверждает
+  исполнитель) — единственное обязательное поле «Дата браковки» лежит там.
+- `setContainerReadOnly(boolean)` и открытие из фрагмента вкладки через
+  `withViewConfigurer` — без изменений.
+- Messages: добавляются `containerRepairDetailView.tab.repair|contract|
+  documents|manufacturer|file`; остаются `section.documents`,
+  `section.costs`, `downloadButton.text`, `download.noFile`, `title`;
+  удаляются неиспользуемые `section.repair|dates|contract|manufacturer|file`
+  и `noFile`.
+
+### Освидетельствование, «Файлы», карточка договора (T13)
+
+- `container-survey-detail-view.xml`: `hbox` 100 %/100 % — слева `formLayout`
+  одной колонкой (`maxWidth="40em"`, поля прежние), справа `fragment
+  displayFile` на оставшуюся ширину, видимый только при `surveyAct != null`;
+  `detailActions` (OK, Отмена, Скачать акт) внизу, «Скачать акт» активна
+  только при файле. Контроллер — `setVisible` вместо `displayNotFoundFile`,
+  подписка на `ItemPropertyChangeEvent("surveyAct")` остаётся,
+  `setContainerReadOnly` сохраняется. `split surveySplit` и `css` удаляются.
+- `container-file-fragment.xml` / `ContainerFileFragment`: `hbox` — грид и
+  `fragment displayFile`; в `ItemChangeEvent` панель `setVisible(false)`,
+  если строки нет или у неё нет файла, иначе `setVisible(true)` + `setFile`.
+  После `refresh()` без выбора панель скрыта. `split filesSplit` и `css`
+  удаляются.
+- `container-contract-detail-view.xml`: содержимое в `scroller` 100 %/100 %
+  (образец `drcontract/view/v-dr-contract-detail-view.xml`) либо `expand` у
+  секции условий с `minHeight` грида — `detailActions` всегда внизу.
+  Поведение «грид условий только у сохранённого договора», `warrantiesHint`
+  и кнопка «Сохранить» не меняются.
+- Ключи `containerSurveyDetailView.noFile` и `containerFileFragment.noFile`
+  удаляются, если стали неиспользуемыми.
+
+### Статика `/img/**` (T14)
+
+`app/security/IframeSecurity.java`, `configureCustomSpecifics`: рядом с
+`requestMatchers("/local-login").permitAll()` добавляется
+`requestMatchers("/img/**").permitAll()`. Картинки `DisplayFile` лежат в
+`META-INF/resources/img/filetype/` и без этого отдаются с кодом 403 во всех
+хостах фрагмента.

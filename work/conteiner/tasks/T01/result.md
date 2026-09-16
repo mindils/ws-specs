@@ -1,19 +1,38 @@
 # Результат T01
 
 Таск: [task.md](task.md)
-Итерация: 1
+Итерация: 2
 Обновлено: 2026-09-15
 
 ## Что реализовано
 
-Persistence-основа контейнерного раздела целиком: 9 основных и 13 справочных
-entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на таблицу,
-русские подписи entity и всех атрибутов, listener нормализации номера
-контейнера и утилита копирования записи. Экранов и ролей нет — это объём T02 и
-далее. Все критерии C1–C6 реализованы и покрыты интеграционными тестами;
-блокеров нет.
+Итерация 2 (эта передача) — только правка чужого changelog-а
+`01-tbl/tbl-pt_repair_packet.xml` по ответу [Q03](../../questions/Q03.md).
+Колонка `PACK_CHECKED_CODE` типа `INT` с remarks из changeSet `16` добавлена в
+основной `createTable` (changeSet `1`), а в конец файла добавлен отдельный
+changeSet `23` (author `dr`) с `addColumn` и `preConditions onFail="MARK_RAN"`
+→ `<not><columnExists .../></not>`. ChangeSet `17` оставлен без изменений. Код
+entity, listener-а, `EntityCopySupport` и messages не менялся; ручная правка
+схемы больше не нужна и снята.
 
-Фактическое поведение:
+Фактическое поведение итерации 2:
+
+- На **полностью пустой схеме** контекст поднимается: `jmix_Liquibase` проходит,
+  тестовый changelog `010-pt_repair_packet-data.xml::test-001` вставляет 6
+  строк, колонка `pack_checked_code integer` есть с нужным комментарием,
+  changeSet `23` получает MARK_RAN (колонка уже пришла из `createTable`).
+- На **существующей схеме без колонки** changeSet `1` перезапускается по
+  `runOnChange` и получает exectype `RERAN` (его preCondition `not tableExists`
+  не выполняется, DDL не идёт, обновляется только checksum), а changeSet `23`
+  получает EXECUTED и создаёт колонку с тем же комментарием.
+- Повторный прогон на той же схеме идемпотентен: миграции не падают, тесты
+  зелёные.
+
+Итерация 1 (подтверждена отчётом [checks/001.md](checks/001.md)) — persistence-
+основа контейнерного раздела целиком: 9 основных и 13 справочных entity в
+`ru.fgk.ws.app.container.entity`, по одному changelog-у на таблицу, русские
+подписи entity и всех атрибутов, listener нормализации номера контейнера и
+утилита копирования записи. Экранов и ролей в таске нет. Фактическое поведение:
 
 - 22 таблицы `cnt_*` создаются миграциями, 35 индексов (в том числе уникальные
   `cnt_container(cont_num)` и `cnt_act_container(act_id, container_id)`),
@@ -34,7 +53,29 @@ entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на 
 
 ## Изменения и решения
 
-Изменённые области:
+Изменено в итерации 2 — один файл:
+
+- `app/src/main/resources/ru/fgk/ws/app/liquibase/changelog/01-tbl/tbl-pt_repair_packet.xml`
+  — строка колонки в `createTable` changeSet `1` и новый changeSet `23`.
+
+Решения итерации 2:
+
+- **Следующий свободный id — `23`.** В файле есть id 1–9, 11–17, 19–22 (id `10`
+  и `18` пропущены исторически и не переиспользуются).
+- **Author нового changeSet — `dr`**, как у changeSet `16` и `17`, которые
+  завели и переименовали `pack_checked_code`; правило проекта допускает
+  feature-префикс, и `dr` сохраняет владение историей этой колонки.
+- **Тип `INT`** — по `PtRepairPacket.packCheckedCode` (`Integer`,
+  `@Column(name = "pack_checked_code")`, `app/.../pt/entity/PtRepairPacket.java:278`).
+- **ChangeSet `17` не удалён и не ослаблен**: на старых базах, где колонка
+  `status` есть, он по-прежнему выполняет переименование; на схемах, где
+  колонка уже пришла из `createTable`, его preCondition не выполняется и он
+  получает MARK_RAN.
+- **Remarks продублированы** и в `createTable`, и в `addColumn`, чтобы
+  комментарий появлялся обоими путями: changeSet `16` со своим
+  `setColumnRemarks` по `status` на чистой схеме не выполняется.
+
+Изменённые области итерации 1:
 
 - `app/src/main/java/ru/fgk/ws/app/container/entity/` — 22 entity.
 - `app/src/main/java/ru/fgk/ws/app/container/listener/ContainerSavingListener.java`.
@@ -49,7 +90,7 @@ entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на 
 - `specs/work/conteiner/contracts.md` — зафиксирован результат проверки DENY с
   soft delete и раздел «Фактические имена (T01)».
 
-Существенные решения:
+Существенные решения итерации 1:
 
 - **DENY учитывает soft delete, сервисная проверка не нужна.** Проверено по
   исходникам Jmix 3.0.1: `DeletePolicyProcessor#referenceExists` считает
@@ -77,6 +118,28 @@ entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на 
 
 ## Предварительные проверки
 
+Итерация 2:
+
+| Команда или сценарий | Результат |
+|---|---|
+| `./gradlew :app:compileJava` | успешно |
+| XML нового changelog-а разбирается парсером | успешно |
+| Пустая схема `main_t01i2`, `./gradlew :app:test --tests "ru.fgk.ws.app.container.ContainerNumberIT"` | 3 зелёных, контекст поднялся, `jmix_Liquibase` прошёл |
+| Тот же прогон повторно (`--rerun-tasks`) на той же схеме | 3 зелёных — миграции идемпотентны |
+| SQL-осмотр `main_t01i2` | `pack_checked_code integer` + remarks, changeSet `23` MARK_RAN, 6 строк тестовых данных, 22 таблицы `cnt_*` |
+| Схема `main_rvk_ws`: снята ручная колонка, затем `./gradlew :app:test --tests "ru.fgk.ws.app.container.*"` | 64 зелёных; changeSet `1` RERAN, changeSet `23` EXECUTED, колонка восстановлена миграцией с remarks |
+| `PtRepairPacket.packCheckedCode` сверен с типом колонки | `Integer` ↔ `INT`, совпадает |
+
+Прогон `--tests "ru.fgk.ws.app.container.*"` сейчас захватывает 15 классов: к
+пяти классам T01 добавились контейнерные тесты последующих тасков, живущие в
+том же worktree. Все 64 теста зелёные.
+
+Тестовые классы T01: `ru.fgk.ws.app.container.ContainerCrudIT`,
+`ContainerNumberIT`, `ContainerDeletePolicyIT`, `EntityCopySupportIT`,
+`ContainerNsiReferenceIT` (плюс фикстуры `ContainerTestData`).
+
+Итерация 1 (историческая, код не менялся):
+
 | Команда или сценарий | Результат |
 |---|---|
 | `./gradlew :app:compileJava` | успешно |
@@ -90,14 +153,10 @@ entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на 
 | Сверка колонок entity и `createTable` скриптом | расхождений нет |
 | Полнота message-ключей для всех атрибутов 22 entity скриптом | пропусков и пустых значений нет |
 
-Тестовые классы: `ru.fgk.ws.app.container.ContainerCrudIT`,
-`ContainerNumberIT`, `ContainerDeletePolicyIT`, `EntityCopySupportIT`,
-`ContainerNsiReferenceIT` (плюс фикстуры `ContainerTestData`).
-
 Не запускалось, оставлено проверяющему: полный `./gradlew :app:test`; прогон
-миграций на полностью пустой схеме с нуля; браузерные проверки (в этом таске
-экранов нет); Entity Inspector для визуальной проверки подписей; проверка ролей
-(их ещё нет).
+миграций на схеме `main` (её не трогали намеренно); браузерные проверки (в этом
+таске экранов нет); Entity Inspector для визуальной проверки подписей; проверка
+ролей (их ещё нет).
 
 ## Для независимой проверки
 
@@ -107,6 +166,10 @@ entity в `ru.fgk.ws.app.container.entity`, по одному changelog-у на 
 `app/src/main/resources/application-local.properties` (не в git), JDBC тестов —
 `app/src/test/resources/application-test-local.properties` (не в git).
 
+Ручная правка схемы из итерации 1 больше не нужна и снята: колонка
+`pack_checked_code` в `main_rvk_ws` сейчас создана миграцией (changeSet `23`),
+значения тестовых строк восстановлены.
+
 ```bash
 docker info && (cd docker && docker compose ps)          # rvk-db должен быть Up
 ./gradlew :app:compileJava
@@ -114,14 +177,47 @@ docker info && (cd docker && docker compose ps)          # rvk-db должен �
 ./gradlew :app:test
 ```
 
-**Перед первым прогоном на новой схеме** нужна разовая правка, см.
-[Q03](../../questions/Q03.md): без неё контекст не поднимается вообще.
+Проверка миграционной части (C1) на пустой схеме. Схему создать, прогнать любой
+интеграционный тест, затем вернуть JDBC тестов на свою схему:
 
 ```sql
-alter table main_rvk_ws.pt_repair_packet add column if not exists pack_checked_code integer;
+create schema main_<slug>;
 ```
 
-SQL-осмотр схемы:
+```bash
+# временно в app/src/test/resources/application-test-local.properties:
+# main.datasource.url = jdbc:postgresql://localhost:5432/postgres?currentSchema=main_<slug>
+./gradlew :app:test --tests "ru.fgk.ws.app.container.ContainerNumberIT"
+./gradlew :app:test --tests "ru.fgk.ws.app.container.ContainerNumberIT" --rerun-tasks
+```
+
+Ожидается: контекст поднимается, тесты зелёные оба раза; ниже — SQL-осмотр.
+
+```sql
+select column_name, data_type from information_schema.columns
+ where table_schema = 'main_<slug>' and table_name = 'pt_repair_packet'
+   and column_name in ('status', 'pack_checked_code');
+-- ожидается ровно одна строка: pack_checked_code | integer
+
+select id, author, exectype from main_<slug>.databasechangelog
+ where filename = 'ru/fgk/ws/app/liquibase/changelog/01-tbl/tbl-pt_repair_packet.xml'
+ order by orderexecuted;
+-- ожидается: 1 EXECUTED, 3 MARK_RAN, 16 MARK_RAN, 17 MARK_RAN, 23 MARK_RAN
+
+select count(*), count(pack_checked_code) from main_<slug>.pt_repair_packet;
+-- ожидается 6 | 6 — тестовый changelog 010-pt_repair_packet-data.xml отработал
+```
+
+Поведение на существующей схеме без колонки (что и произошло на `main_rvk_ws`
+после снятия ручной правки): changeSet `1` получает exectype `RERAN`, а не
+MARK_RAN — он объявлен `runOnChange="true"`, поэтому при изменении checksum
+перезапускается; DDL при этом не выполняется, потому что его preCondition
+`not tableExists` не проходит. ChangeSet `23` получает EXECUTED и создаёт
+колонку. На схеме `main` ожидается то же для changeSet `1` и MARK_RAN для
+changeSet `23`, так как колонку там уже завёл changeSet `17`. Схему `main` в
+этой сессии не трогали.
+
+SQL-осмотр контейнерной части схемы:
 
 ```sql
 select table_name from information_schema.tables
@@ -142,18 +238,19 @@ select conname from pg_constraint
 общая на все worktree — прогон занимает её на время теста.
 
 Изоляция общих ресурсов: своя схема `main_rvk_ws` и порт 8082 из
-`application-local.properties`; параллельных сессий на момент выполнения не
-было.
+`application-local.properties`. Временная схема `main_t01i2`, на которой
+проверялась пустая база, удалена после прогона.
 
 ## Ограничения и связанные изменения
 
-- [Q03](../../questions/Q03.md) — на любой чистой схеме контекст не
-  поднимается из-за чужого changelog-а `tbl-pt_repair_packet.xml` (колонка
-  `pack_checked_code` создаётся только переименованием колонки `status`,
-  которой на новой схеме нет). К T01 отношения не имеет, воспроизводится и без
-  его изменений. Обойдено правкой схемы `main_rvk_ws` руками; сам changelog не
-  трогался, так как лежит вне области таска. Вопрос неблокирующий: T01 готов
-  целиком.
+- [Q03](../../questions/Q03.md) закрыт правкой самого changelog-а; обходной
+  `alter table ... add column` из итерации 1 снят и больше нигде не нужен.
+  Отчёт [checks/001.md](checks/001.md) в части C1 стал историческим: схема
+  теперь разворачивается миграциями без ручных шагов.
+- Правка затрагивает чужую область (`pt`/`dr`). Данные она не меняет: на
+  существующих базах колонка уже есть, на чистых приходит из `createTable`.
+  Доказательства других тасков это не обесценивает — колонки на `main` и так
+  не было видно из контейнерного кода.
 - IDE-инспекция (`get_file_problems`) и Context7 MCP в сессии недоступны, как и
   MCP `mcp__rvk-ws__query`. Символы Jmix проверялись по исходникам Jmix 3.0.1
   из кэша Gradle (`jmix-core`, `jmix-data`, `jmix-eclipselink`), схема — прямым
@@ -164,5 +261,6 @@ select conname from pg_constraint
   длина в футах) в модель не добавлялись: по contracts.md они показываются
   read-only по property path из ссылок и в БД не хранятся — это объём T03.
 - Рабочая копия содержит чужие изменения (`application.properties`,
-  `01-tbl/020-dr_diadoc_wag_oper_repair_contract.xml`); они не трогались и не
-  откатывались.
+  `01-tbl/020-dr_diadoc_wag_oper_repair_contract.xml`, `menu.xml`,
+  `messages_ru.properties` и файлы последующих тасков контейнерного раздела);
+  они не трогались и не откатывались.
