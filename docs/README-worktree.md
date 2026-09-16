@@ -28,15 +28,43 @@
 system/worktree-setup.sh /path/to/worktree        # идемпотентно
 system/worktree-setup.sh --dry-run /path/to/worktree
 system/worktree-setup.sh --recreate /path/to/worktree   # пересоздать пустую схему
-system/worktree-setup.sh --no-db --no-specs /path/to/worktree
+system/worktree-setup.sh --no-db --no-links /path/to/worktree
 ```
 
-Скрипт также: копирует `application-dev.properties`,
-`migration/ws_store/liquibase.properties`, `.ignore`, `.use-public-repos`;
-переносит симлинки agent-kit (`CLAUDE.md`, `AGENTS.md`, `.claude/`, `.agents/`);
-делает симлинки `specs/` и `openspec/` на основной worktree (это отдельные
-git-репозитории, task-скилы ходят по `specs/work/...`); переключает
-gradle-wrapper на `services.gradle.org`, если так сделано в основном worktree.
+Скрипт также переносит файлы вне git по списку `system/worktree.conf` и
+переключает gradle-wrapper на `services.gradle.org`, если так сделано в
+основном worktree.
+
+## Какие файлы переносятся: `system/worktree.conf`
+
+Список лежит в `system/worktree.conf` (в git) и дополняется
+`system/worktree.local.conf` (не в git, тот же формат). Оба читаются из
+**основного** worktree. Строка — `<вид> <путь>`, путь относительно корня
+worktree, `#` — комментарий:
+
+| Вид | Действие |
+|---|---|
+| `copy <file>` | скопировать файл, если в worktree его нет |
+| `copy-dir <dir>` | скопировать каталог (`cp -a`, симлинки внутри сохраняются) |
+| `link <dir>` | симлинк на каталог основного worktree (отключается `--no-links`) |
+| `link-same <path>` | повторить симлинк основного worktree с той же целью; если там обычный файл — `copy` |
+| `touch <file>` | создать пустой файл, если он есть в основном worktree |
+| `skip <path>` | отключить запись с этим путём из общего конфига |
+
+В общем конфиге: `application-dev.properties`,
+`application-test-local.properties`, `migration/ws_store/liquibase.properties`,
+`.ignore`, `.use-public-repos`; симлинки agent-kit (`CLAUDE.md`, `AGENTS.md`),
+копии `.claude/`, `.agents/`; `link specs` и `link openspec` — это отдельные
+git-репозитории, task-скилы ходят по `specs/work/...`. Для `link`-каталогов
+скрипт правит общий `.git/info/exclude`: шаблон `/dir/` заменяется на `/dir`,
+иначе симлинк не игнорируется.
+
+Пример `system/worktree.local.conf`:
+
+```
+copy-dir  .playwright-cli
+skip      openspec
+```
 
 Удаление:
 

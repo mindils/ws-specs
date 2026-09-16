@@ -533,6 +533,27 @@ Detail view-id: `cnt_<Entity>.detail`; они же указываются в `@V
 - `ContainerRegistryViewsUiTest` проверяет состояние вкладок у нового и
   сохранённого контейнера.
 
+Фактически при реализации T11:
+
+- У `containerTabSheet` кроме `width`/`height` стоит `minHeight="0"`. Без него
+  корневой `VerticalLayout` не ужимает вкладки: у `jmix-tabsheet` собственный
+  `min-height: auto` равен высоте содержимого, поэтому `hbox detailActions`
+  целиком уезжает под нижнюю границу окна. Это тот же дефект, что чинит таск,
+  только вызванный уже новой компоновкой; `minHeight` — штатный атрибут
+  размера, CSS для этого не нужен.
+- Подзаголовки групп получили id `identityGroup`, `modelGroup`, `massGroup`,
+  `datesGroup`; `classNames` у них нет.
+- Порядок полей группы «Модель, тип и размер» — как в таблице выше, то есть
+  `genCharField` переехал в конец группы (раньше стоял между `capacityField`
+  и `constrDateField`).
+- Полей описания 21, а не 22: перечисление в таблице выше — источник истины,
+  число в критерии C4 таска было завышено на единицу.
+- Вкладки берутся в контроллере как `@ViewComponent("containerTabSheet.<tabId>")
+  Tab` (тот же приём, что в `pt/view/ptrepairpacket/PtRepairPacketDetailView`);
+  `Tab` реализует `HasComponents`, поэтому `setEnabled(boolean)` доступен.
+  Выбранная вкладка у нового контейнера не задаётся кодом: `descriptionTab`
+  первая и выбирается по умолчанию.
+
 ### Форма ремонта (T12)
 
 - `layout` → `tabSheet id="repairTabSheet" width="100%" height="100%"
@@ -565,6 +586,32 @@ Detail view-id: `cnt_<Entity>.detail`; они же указываются в `@V
   `section.costs`, `downloadButton.text`, `download.noFile`, `title`;
   удаляются неиспользуемые `section.repair|dates|contract|manufacturer|file`
   и `noFile`.
+
+Уточнено при реализации T12:
+
+- **Поля невыбранной вкладки штатная проверка не проверяет.** Содержимое
+  невыбранной вкладки `JmixTabSheet` помечает отключённым
+  (`updateContent()` → `setEnabled(false)` у узла), а
+  `AbstractFieldDelegate#executeValidators` у отключённого поля выходит сразу.
+  С открытой вкладкой «Документы и стоимость» ремонт без «Даты браковки»
+  сохранился бы молча. Поэтому `ContainerRepairDetailView` переопределяет
+  `StandardDetailView#validateView()`: сначала выбирает `repairTab`, затем
+  зовёт `super`. Заодно решается и задача из постановки — вкладка с
+  подсвеченным полем открыта. `ValidationEvent` для этого не годится
+  вдвойне: `validateView()` возвращает ошибки компонентов до того, как
+  событие вообще выпускается.
+- **`minHeight="0"` у `repairTabSheet`** — по той же причине, что и в
+  карточке контейнера: иначе панель `detailActions` уезжает под нижнюю
+  границу окна.
+- **Просмотр документа растягивает `expand`, а не размеры фрагмента.**
+  Элемент `<fragment>` принимает только базовые атрибуты (`id`, `visible`,
+  `colspan`, `css`, `class`, `classNames`) — ни `width`, ни `height` у него
+  нет, а `css` в разделе запрещён. Поэтому `vbox fileBox` (100 %/100 %)
+  объявляет `expand="displayFile"`, и PDF-просмотр занимает всю высоту под
+  полем загрузки.
+- Полей формы 32, а не 33, как сказано в критерии C1 таска: таблица
+  распределения даёт 14 + 5 + 8 + 4 + 1; столько же было в исходном XML.
+  Реализован перечень таблицы.
 
 ### Освидетельствование, «Файлы», карточка договора (T13)
 
