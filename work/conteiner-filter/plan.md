@@ -2,6 +2,8 @@
 
 Состояние: active
 Дата согласования: 2026-09-16
+Пересмотр: 2026-09-17 — [questions/Q01.md](questions/Q01.md), справочные
+фильтры переносятся внутрь `rvkFilter` (T05)
 Предыдущая работа: [conteiner/summary.md](../conteiner/summary.md)
 
 ## Цель и границы
@@ -17,24 +19,38 @@
 использования — `nsi/view/vdepo/v-depo-list-view.xml`.
 
 Результат: на всех 19 списках раздела стоит `flt:rvkFilter` (строка поиска,
-набор условий, пресеты) вместо прежних панелей; фильтры по справочникам
-`cnt_*` остаются штатными компонентами над `rvkFilter` и становятся выбором
-из справочника; личные пресеты доступны каждому пользователю UI через
-минимальную роль.
+набор условий, пресеты) вместо прежних панелей; ссылки на справочники
+`cnt_*`, организации `VOrgPassport` и договоры `ContainerContract` — поля
+`rvkFilter` с выбором сущности (серверный поиск по вводу, кнопка «Выбрать…»
+через штатный list view); штатных `propertyFilter` на списках не остаётся;
+личные пресеты доступны каждому пользователю UI через минимальную роль.
 
-Не входит: доработка самого аддона (entity picker, выбор операции, AND/OR);
-перенос справочных фильтров внутрь `rvkFilter` (пользователь сделает после
-доработки аддона); вкладки карточки контейнера (там фильтров нет); слияние
-`f/container` в `main`; переключатель «старые/новые фильтры» из ветки
-`f/new-filter`.
+Доработка 2026-09-17 ([Q01](questions/Q01.md)): аддон получил типы
+`entity`/`entityList`, поэтому 9 выпадающих списков над `rvkFilter` (T02) и
+ссылки, стоявшие текстом по пути (`owner.shortname`, `org.shortname`,
+`contract.contractNum`, `defect.defectName`…), переносятся внутрь панели
+одним таском T05 с обновлением jar в `libs/`; T04 после этого проходится
+повторно.
+
+Не входит: доработка самого аддона (выбор операции, AND/OR); поля по
+станциям `VStation` как выбор сущности (вычисляемый `@InstanceName`, нужен
+свой `itemsQuery` — остаются текстом); вкладки карточки контейнера (там
+фильтров нет); слияние `f/container` в `main`; переключатель «старые/новые
+фильтры» из ветки `f/new-filter`.
 
 ## Материалы
 
 - Аддон: `../rvk-filter/README.md`, `docs/xml-api.md`, `docs/java-api.md`,
   `docs/persistence-and-security.md`, `docs/compatibility.md`, примеры
-  `docs/examples/*.xml`. Jar в `libs/` собран из рабочего дерева аддона и
-  содержит `operation`, `valueList`, `configurationKey` (проверено по XSD и
-  классам внутри jar 2026-09-16).
+  `docs/examples/*.xml`. Jar 0.0.1 в `libs/` (2026-09-14) содержит
+  `operation`, `valueList`, `configurationKey`, но не ссылки на сущности.
+  Поддержка `entity`/`entityList` (`lookup`, `optionsLimit`,
+  `<flt:itemsQuery>`) — в рабочем дереве аддона (uncommitted, jar
+  `rvk-filter/build/libs/rvk-filter-0.0.1-SNAPSHOT.jar` от 2026-09-17):
+  `docs/xml-api.md` «Ссылки на сущности», `docs/examples/entity-view.xml`,
+  `docs/compatibility.md` (оговорка про `use-inner-join-in-condition` и
+  формат пресетов). Changelog аддона не менялся. В T05 jar пересобирается
+  как 0.0.2 по `libs/README.md`.
 - Образец `rvkFilter` в проекте: `nsi/view/vdepo/v-depo-list-view.xml`,
   тест `nsi/view/vdepo/VDepoListViewTest.java`.
 - Образец штатного фильтра-выбора из справочника:
@@ -64,24 +80,50 @@
 - Работа ведётся прямо в ветке `f/container` (worktree cyan-fennel) поверх
   незакоммиченных файлов закрытой работы: их не откатывать, коммиты — только
   по указанию пользователя.
-- Фильтры по справочникам `cnt_*` (реестр: модель, тип, размер; ремонты: вид
-  ремонта; освидетельствования: вид; акты: тип акта; договоры: тип договора;
-  гарантии: тип гарантии, тип контейнера) остаются штатными `propertyFilter`
-  над `rvkFilter` и становятся выбором из справочника: `property` — сама
-  ссылка, `operation="EQUAL"`, внутри `entityComboBox` с `itemsContainer`.
-  Внутри `rvkFilter` эти поля текстом не дублируются.
+- Отменено 2026-09-17 ([Q01](questions/Q01.md)): фильтры по справочникам
+  `cnt_*` (реестр: модель, тип, размер; ремонты: вид ремонта;
+  освидетельствования: вид; акты: тип акта; договоры: тип договора; гарантии:
+  тип гарантии, тип контейнера) были штатными `propertyFilter` +
+  `entityComboBox` над `rvkFilter` (сделано в T02). Теперь они переносятся
+  внутрь `rvkFilter` (T05).
+
+Ответы пользователя 2026-09-17 ([Q01](questions/Q01.md)):
+
+- Внутрь `rvkFilter` переносятся 9 прежних выпадающих списков и ссылки на
+  `VOrgPassport`, `ContainerContract`, `cnt_*`, стоявшие текстом по пути:
+  `owner`, `org`, `repContract`, `contract`, `defect`, `defectReason`,
+  `warrBegin`, `genChar`, `CntDefect.defectReason`. Режим — одно значение
+  (`entity`, EQUAL), как у прежних выпадающих списков. Ссылки на `VStation`
+  и `container.contNum` (searchProperty ремонтов и освидетельствований)
+  остаются текстом.
+- Entity-поле: `<flt:propertyFilter id="<ссылка>" property="<ссылка>"/>` без
+  `type`, `operation`, `lookup` (автотип `entity`, EQUAL, `lookup="auto"`:
+  кнопка «Выбрать…» есть у `cnt_*` и `ContainerContract`, у `VOrgPassport`
+  list view нет — только поиск по вводу). Подпись — из метаданных ссылки;
+  явный `label` только где метаданные не подходят
+  (`ContainerWarranty.contract` = «Гарантия к договору» → ключ
+  `containerWarrantyListView.filter.contract` = «Договор» остаётся).
+- `formLayout id="filterPanel"`, штатные `propertyFilter` и справочные
+  `collection`/`loader` удаляются со всех списков раздела; ключи
+  `…ListView.filter.*`, чьи подписи совпали с атрибутами entity, удаляются.
+- Jar аддона в `libs/` обновляется до 0.0.2 по `libs/README.md` (пара jar,
+  `rvkFilterVersion`, прежняя пара убирается из Git).
 
 Технические решения (основание — код аддона и Jmix 3.0.x, проверено
-2026-09-16):
+2026-09-16, дополнено 2026-09-17):
 
-- **Порядок в XML: штатные `propertyFilter` объявляются выше
-  `flt:rvkFilter`.** `RvkFilter.setDataLoader` захватывает
-  `loader.getCondition()` как base-условие (`FilterLoaderConditions.forLoader`),
-  а штатный фильтр добавляет своё условие в корневой `LogicalCondition`
-  loader-а при создании (`SingleFilterComponentBase.updateDataLoaderCondition`)
-  и потом меняет только значение параметра. Штатный фильтр, объявленный ниже
-  `rvkFilter`, потерялся бы при первом Apply. Совместная работа обоих на одном
-  loader закрывается UI-тестом (T02).
+- Неактуально после T05: правило «штатные `propertyFilter` выше
+  `flt:rvkFilter`» (base-условие `RvkFilter.setDataLoader` захватывает
+  `loader.getCondition()`, штатный фильтр ниже терялся бы при первом Apply).
+  Штатных фильтров на списках не остаётся; тест пересечения со штатным
+  фильтром в `ContainerRvkFilterUiTest` заменяется тестом entity-условия.
+- Entity-условие аддон строит по `<property>.<pkName>` (сравнение с колонкой
+  FK, без join к справочнику); опции ищутся `contains` без учёта регистра по
+  строковым `@InstanceName` через constrained `DataManager` — `container-read`
+  уже даёт READ на `VOrgPassport`, `ContainerContract`, `cnt_*`.
+  `jmix.eclipselink.use-inner-join-in-condition=true` в приложении на EQUAL
+  не влияет; отрицания по ссылке не используются. В пресете хранится только
+  id, подпись подгружается — переименование справочника видно сразу.
 - Ловушка префикса `container_` (см. contracts.md закрытой работы, T04) для
   `rvkFilter` не действует: `AbstractDataLoadCoordinator.configureAutomatically`
   сканирует параметры условий при инициализации view, а `rvkFilter`
@@ -98,52 +140,47 @@
   метаданным (`numberRange`); «ИД» гарантии — `operation="EQUAL"` (один ввод);
   boolean — `type="boolean"`. Подписи полей по пути через ссылку — явный
   `label="msg://…"` (для прямых свойств подпись берётся из метаданных).
-- Состав полей: `defaultVisible="true"` у полей прежних панелей (минус ссылки,
-  ушедшие в выпадающие списки); остальные скалярные колонки грида и
-  `<ссылка>.<название>` для ссылок вне выпадающих списков — скрытые поля
-  (`defaultVisible` по умолчанию). Поля аудита и `FileRef` не добавляются.
-- Id полей `rvkFilter`: имя свойства; для пути — camelCase без точки
-  (`ownerShortname`, `containerContNum`). `order` — шаг 10 в порядке прежних
-  панелей.
+- Состав полей: `defaultVisible="true"` у полей прежних панелей, включая
+  прежние выпадающие списки; остальные скалярные колонки грида — скрытые
+  поля (`defaultVisible` по умолчанию); ссылки на `cnt_*`, `VOrgPassport`,
+  `ContainerContract` — entity-поля, ссылки на `VStation` и
+  `container.contNum` — текст по пути `<ссылка>.<название>`. Поля аудита и
+  `FileRef` не добавляются.
+- Id полей `rvkFilter`: имя свойства (для entity-поля — имя ссылки:
+  `model`, `org`, `repContract`); для пути — camelCase без точки
+  (`containerContNum`, `repStName`). `order` — шаг 10: сначала entity-поля
+  в порядке прежних выпадающих списков, затем остальные в прежнем порядке.
 - `dataLoadCoordinator auto`, `settings auto`, `urlQueryParameters pagination`,
   панель кнопок, грид, lookup-действия и Java-контроллеры списков не
-  меняются. `formLayout id="filterPanel"` остаётся только там, где есть
-  выпадающие списки, иначе удаляется.
+  меняются. `formLayout id="filterPanel"` удаляется везде (T05).
 
 ### Шаблон страницы
+
+Целевое состояние после T05 (до T05 на шести страницах стоял
+`formLayout id="filterPanel"` со штатными `propertyFilter` + `entityComboBox`
+и справочные `collection`/`loader` — всё это удаляется):
 
 ```xml
 <view xmlns="http://jmix.io/schema/flowui/view"
       xmlns:flt="http://fgk.ru/schema/rvk-filter" ...>
   <data>
-    <collection id="repairsDc" .../>   <!-- как сейчас -->
-    <collection id="repairTypesDc"
-                class="ru.fgk.ws.app.container.entity.CntRepairType">
-      <fetchPlan extends="_instance_name"/>
-      <loader id="repairTypesDl" readOnly="true">
-        <query><![CDATA[select e from cnt_CntRepairType e order by e.repairTypeName]]></query>
-      </loader>
-    </collection>
+    <collection id="repairsDc" .../>   <!-- как сейчас; справочных collection нет -->
   </data>
   <layout>
-    <formLayout id="filterPanel" width="100%">   <!-- только справочные ссылки -->
-      <responsiveSteps>...как сейчас...</responsiveSteps>
-      <propertyFilter id="repairTypeFilter" property="repairType" operation="EQUAL"
-                      operationTextVisible="false" labelPosition="TOP"
-                      dataLoader="repairsDl" width="100%">
-        <entityComboBox metaClass="cnt_CntRepairType" itemsContainer="repairTypesDc" width="100%">
-          <actions><action id="entityClearAction" type="entity_clear"/></actions>
-        </entityComboBox>
-      </propertyFilter>
-    </formLayout>
     <flt:rvkFilter id="rvkFilter" dataLoader="repairsDl" searchProperty="container.contNum" width="100%">
       <flt:filters>
+        <!-- entity-поля: без type/operation/lookup — автотип entity, EQUAL, lookup="auto" -->
+        <flt:propertyFilter id="repairType" property="repairType" defaultVisible="true" order="10"/>
+        <flt:propertyFilter id="org" property="org" defaultVisible="true" order="20"/>
+        <flt:propertyFilter id="repContract" property="repContract" defaultVisible="true" order="30"/>
+        <!-- текст по пути: searchProperty и ссылки на VStation -->
         <flt:propertyFilter id="containerContNum" property="container.contNum"
                             label="msg://containerRepairListView.filter.container"
-                            defaultVisible="true" order="10"/>
+                            defaultVisible="true" order="40"/>
         <flt:propertyFilter id="rejectDate" property="rejectDate" type="dateRange"
                             defaultVisible="true" order="50"/>
         ...
+        <flt:propertyFilter id="defect" property="defect" order="..."/>   <!-- скрытое entity-поле -->
       </flt:filters>
     </flt:rvkFilter>
     <hbox id="buttonsPanel" .../>   <!-- далее без изменений -->
@@ -151,15 +188,21 @@
 
 ### Страницы
 
-| View | searchProperty | Выпадающие списки (штатно) | defaultVisible в rvkFilter |
-|---|---|---|---|
-| `cnt_Container.list` | `contNum` | `model`, `type`, `size` | `manufNum`, `manufacturer`, `owner.shortname`, `nextSurveyDate` |
-| `cnt_ContainerRepair.list` | `container.contNum` | `repairType` | `container.contNum`, `org.shortname`, `repContract.contractNum`, `rejectDate`, `dateBegin`, `dateEnd` |
-| `cnt_ContainerSurvey.list` | `container.contNum` | `surveyType` | `container.contNum`, `org.shortname`, `dateBegin`, `dateEnd`, `dateNext` |
-| `cnt_ContainerAct.list` | `actNum` | `actType` | `contract.contractNum`, `dateSign` |
-| `cnt_ContainerContract.list` | `contractNum` | `contractType` | `org.shortname`, `dateSign`, `dateBegin`, `dateEnd` |
-| `cnt_ContainerWarranty.list` | `contract.contractNum` | `warrType`, `contType` | `id` (EQUAL), `contract.contractNum` |
-| 13 `cnt_Cnt*.list` | поле названия | нет, `filterPanel` удаляется | поле названия |
+| View | searchProperty | Entity-поля (defaultVisible) | Entity-поля (скрытые) | Прочие defaultVisible |
+|---|---|---|---|---|
+| `cnt_Container.list` | `contNum` | `model`, `type`, `size`, `owner` | `genChar` | `manufNum`, `manufacturer`, `nextSurveyDate` |
+| `cnt_ContainerRepair.list` | `container.contNum` | `repairType`, `org`, `repContract` | `defect`, `defectReason` | `container.contNum`, `rejectDate`, `dateBegin`, `dateEnd` |
+| `cnt_ContainerSurvey.list` | `container.contNum` | `surveyType`, `org` | — | `container.contNum`, `dateBegin`, `dateEnd`, `dateNext` |
+| `cnt_ContainerAct.list` | `actNum` | `actType`, `contract` | — | `dateSign` |
+| `cnt_ContainerContract.list` | `contractNum` | `contractType`, `org` | — | `dateSign`, `dateBegin`, `dateEnd` |
+| `cnt_ContainerWarranty.list` | `contract.contractNum` | `warrType`, `contType`, `contract` (label «Договор») | `warrBegin` | `id` (EQUAL) |
+| `cnt_CntDefect.list` | `defectName` | — | `defectReason` | `defectName` |
+| 12 прочих `cnt_Cnt*.list` | поле названия | — | — | поле названия |
+
+До T05 столбцы entity-полей были «выпадающие списки над `rvkFilter`» (первый
+столбец) и текстовые поля по пути `owner.shortname`, `org.shortname`,
+`repContract.contractNum`, `contract.contractNum`, `defect.defectName`,
+`defectReason.defectReasonName`, `warrBegin.actTypeName`, `genChar.charName`.
 
 Поля названия справочников: `CntModel.model`, `CntContainerType.typeName`,
 `CntContainerSize.code`, `CntGeneralCharacteristic.charName`,
@@ -173,27 +216,30 @@
 
 Скрытые поля основных страниц: остальные скалярные колонки грида (реестр —
 `contNum`, массы, `capacity`, `constrDate`, `roofUpgrade`, `roofUpgradeDate`,
-`genChar.charName`; ремонты — `id`, прочие даты, `defect.defectName`,
-`defectReason.defectReasonName`, станции `repSt.stName`, `rejectSt.stName`,
+`genChar` (entity); ремонты — `id`, прочие даты, `defect`, `defectReason`
+(entity), станции текстом `repSt.stName`, `rejectSt.stName`,
 `repStInstr.stName`, стоимости, `vat`, текстовые поля, `roofUpgrade`;
 акты — `id`, `actNum`, `comment`; договоры — `id`, `contractNum`; гарантии —
 `warrDuration`, `extWarrDuration`, `inspInDays`, `penalty`,
-`warrBegin.actTypeName`). Исполнитель может сократить список, если поле в
+`warrBegin` (entity)). Исполнитель может сократить список, если поле в
 аддоне не поддерживается — с записью в `result.md`.
 
 ## Критерии всей работы
 
 - На всех 19 списках раздела есть `rvkFilter` со строкой поиска и полями по
-  таблице «Страницы»; прежних панелей `propertyFilter` нет, кроме выпадающих
-  списков по справочникам `cnt_*` над `rvkFilter`.
-- Поиск и условия `rvkFilter` фильтруют грид; выпадающий список справочника
-  фильтрует одновременно с `rvkFilter` (пересечение), Reset возвращает полный
-  список; фильтр по `container.contNum` в ремонтах и освидетельствованиях
-  работает.
+  таблице «Страницы»; штатных `propertyFilter` и `formLayout id="filterPanel"`
+  нет ни на одном списке (после T05).
+- Поиск и условия `rvkFilter` фильтруют грид; entity-поле показывает опции
+  по вводу, «Выбрать…» открывает штатный list view справочника и возвращает
+  выбор, условие действует вместе с поиском (пересечение), чип и пресет
+  показывают название, а не id; Reset возвращает полный список; фильтр по
+  `container.contNum` в ремонтах и освидетельствованиях работает.
 - Пользователь с ролями `ui-minimal` + `container-read` сохраняет личный
-  пресет и видит его после переоткрытия страницы.
+  пресет (в том числе с entity-условием) и видит его после переоткрытия
+  страницы.
 - Сырых `msg://` нет, неиспользуемых ключей `…ListView.filter.*` нет;
-  `spotlessCheckAll`, контейнерный пакет тестов и `UiMinimalRoleTest` зелёные.
+  `spotlessCheckAll`, контейнерный пакет тестов, `UiMinimalRoleTest` и тесты
+  `nsi.view.vdepo.*` (другой пользователь jar-а) зелёные.
 
 ## Таски
 
@@ -204,7 +250,8 @@
 | [T01](tasks/T01/task.md) | `UiMinimalRole extends RvkFilterUserRole`, тест роли | — |
 | [T03](tasks/T03/task.md) | 13 справочников: `rvkFilter` вместо `filterPanel`, messages | — |
 | [T02](tasks/T02/task.md) | 6 основных страниц: выпадающие списки + `rvkFilter`, messages, `ContainerRvkFilterUiTest` | — |
-| [T04](tasks/T04/task.md) | Сквозная проверка: тесты раздела, `spotlessCheckAll`, браузерный проход, правка дефектов | T01, T02, T03 |
+| [T05](tasks/T05/task.md) | Jar 0.0.2, справочные ссылки как entity-поля внутри `rvkFilter` на 7 страницах, messages, тест | T02, T03 |
+| [T04](tasks/T04/task.md) | Сквозная проверка: тесты раздела, `spotlessCheckAll`, браузерный проход, правка дефектов | T01, T02, T03, T05 |
 
 ## Параллельность и тестирование
 
@@ -213,7 +260,8 @@
 | T01 | `app/security/UiMinimalRole.java`, новый `app/src/test/.../security/UiMinimalRoleTest.java` | БД, gradle daemon | T02, T03 | первой |
 | T03 | `container/view/cnt*/*-list-view.xml`, свои ключи `messages_ru.properties` | БД, gradle daemon | T01, T02 | после T01 |
 | T02 | `container/view/{container,containerrepair,containersurvey,containeract,containercontract,containerwarranty}/*-list-view.xml`, свои ключи `messages_ru.properties`, `container/view/ContainerRvkFilterUiTest.java` | БД, gradle daemon, порт 8080, браузер | T01, T03 | после T03 |
-| T04 | правки дефектов в областях T01–T03 | всё | — | последней |
+| T05 | области T02 + `cntdefect/cnt-defect-list-view.xml`, `libs/`, `app/build.gradle`, ключи `filter.*` контейнерных view | всё (сборка аддона, БД, gradle daemon, порт, браузер) | — (после `done` T02, T03) | после T02 |
+| T04 | правки дефектов в областях T01–T03, T05 | всё | — | последней |
 
 Все таски выполняются в одном worktree `../worktrees/rvk-ws/cyan-fennel/rvk-ws`
 (ветка `f/container`, схема `main_rvk_ws` из `application-local.properties`,
@@ -233,13 +281,16 @@ daemon и порт 8080 — проверки идут последователь
 
 ## Как выполнять
 
-1. T01, T02, T03 стартуют сразу в трёх сессиях.
-2. Проверки: T01 → T03 → T02.
-3. T04 после `done` у T01–T03; затем `task-close`.
+1. T01, T02, T03 стартуют сразу в трёх сессиях. (Выполнено 2026-09-16.)
+2. Проверки: T01 → T03 → T02. (Выполнено.)
+3. T04 после `done` у T01–T03. (Пройден 2026-09-16, возвращён в `todo`
+   пересмотром Q01.)
+4. T05 в одной сессии (2026-09-17).
+5. T04 повторно после `done` у T05; затем `task-close`.
 
 Перед каждым таском прочитать skills `jmix-create-list-view`,
 `jmix-add-i18n-keys`, `jmix-ide-static-analysis`, `jmix-create-test`; для
 T01 — `jmix-create-resource-role`. Gate 1 — IDE-инспекция каждого изменённого
 `*-view.xml`, иначе `./gradlew :app:compileJava` и механические проверки.
-Gate 2 — тесты раздела. Gate 3 (T02, T04) — `playwright-cli`; без браузера
-писать `render not browser-verified`.
+Gate 2 — тесты раздела. Gate 3 (T02, T04, T05) — `playwright-cli`; без
+браузера писать `render not browser-verified`.

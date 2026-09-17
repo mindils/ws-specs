@@ -1,11 +1,11 @@
 # T01 — Право на пресеты фильтра у минимальной роли
 
-Статус: todo
+Статус: done
 План: [../../plan.md](../../plan.md)
 Зависимости: нет
 Сложность: easy — один файл роли по образцу `WsUserRole extends …`, контракт аддона готов
 Сложность проверки: easy — тест роли через `ResourceRoleRepository` без браузера
-Актуальная проверка: нет
+Актуальная проверка: [checks/001.md](checks/001.md)
 
 ## Коротко
 
@@ -80,9 +80,11 @@ worktree не откатывать.
 
 ## Прогресс и продолжение
 
-- [ ] `UiMinimalRole extends RvkFilterUserRole` с javadoc.
-- [ ] `UiMinimalRoleTest`.
-- [ ] Передать результат на независимую проверку.
+- [x] `UiMinimalRole extends RvkFilterUserRole` с javadoc.
+- [x] `UiMinimalRoleTest` (наследник `BaseIT`, 3 проверки), 3 passing.
+- [x] Передать результат на независимую проверку: [result.md](result.md),
+      итерация 1.
+- [x] Независимая проверка: [checks/001.md](checks/001.md), итог pass.
 
-Ближайший шаг: открыть `UiMinimalRole.java` и `WsUserRole.java`.
+Ближайший шаг: таск T03 (справочники) по плану.
 Препятствия: нет

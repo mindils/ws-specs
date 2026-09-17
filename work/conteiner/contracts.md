@@ -178,7 +178,9 @@
 - `cnt_Container.detail`: шапка «Описание» (все поля `cnt_container` +
   виртуальные), затем `tabSheet` с вкладками Характеристики, Ремонты,
   Освидетельствования, Акты, Файлы, История. Порядок как в старой карточке без
-  Операций и Накладных.
+  Операций и Накладных. **Устарело с 2026-09-16** — отдельной шапки нет,
+  «Описание» стало первой вкладкой `containerTabSheet`; фактический порядок
+  вкладок — в «Пересмотр UI 2026-09-16».
 - Вкладка = фрагмент (`@FragmentDescriptor`) в `container/view/fragment/<name>/`,
   получает `containerDc` через `<property name="containerDc" value="containerDc"
   type="CONTAINER_REF"/>`, загружает свой `collection` по
@@ -190,7 +192,9 @@
   `StandardOutcome.SAVE` фрагмент перезагружает свой loader; после cancel —
   ничего.
 - Для нового контейнера (`entityStates.isNew`) `tabSheet` недоступен до первого
-  сохранения; сообщение подсказывает сохранить описание.
+  сохранения; сообщение подсказывает сохранить описание. **Устарело с
+  2026-09-16** — `tabSheet` виден всегда, у нового контейнера выключены шесть
+  вкладок кроме `descriptionTab`, подсказки нет (T11).
 - Ремонт и освидетельствование: одна entity и одна detail-форма используются и
   из самостоятельного списка, и из вкладки. Форма принимает контейнер как
   инициализированное значение; из списка контейнер выбирается lookup-ом.
@@ -210,7 +214,10 @@
   `propertiesTab`, `filesTab`, `historyTab`. Новые вкладки добавляются на свои
   места по комментариям в XML: `repairsTab` и `actsTab` (T07), `surveysTab`
   (T04) — между `propertiesTab` и `filesTab`, в порядке Ремонты,
-  Освидетельствования, Акты.
+  Освидетельствования, Акты. **Дополнено 2026-09-16** — первой вкладкой стала
+  `descriptionTab`, поэтому фактический порядок семи вкладок:
+  `descriptionTab`, `propertiesTab`, `repairsTab`, `surveysTab`, `actsTab`,
+  `filesTab`, `historyTab`.
 - Вкладка-фрагмент получает `<property name="containerDc" value="containerDc"
   type="CONTAINER_REF"/>`; в контроллере это сеттер
   `public void setContainerDc(InstanceContainer<Container> containerDc)`.
@@ -495,8 +502,11 @@ Detail view-id: `cnt_<Entity>.detail`; они же указываются в `@V
 классами `buttons-panel`, `text-secondary`. Общий фрагмент
 `common/view/displayfile/DisplayFile` не меняется; в контейнерном разделе его
 `displayNotFoundFile` больше не вызывается — вместо заглушки панель просто
-скрыта. Исполнители T11–T13 дописывают ниже фактические имена, если они
-отклонились.
+скрыта. Подразделы «Фактически при реализации …» ниже описывают состояние
+кода; сквозная сверка 2026-09-16 подтвердила, что id и подписи вкладок,
+`minHeight="0"`, `expand` и скрытие просмотра в XML совпадают с записанными
+здесь, а `css=`, `<details>`, `<split>` и `displayNotFoundFile` в разделе не
+встречаются.
 
 ### Карточка контейнера (T11)
 
@@ -634,6 +644,37 @@ Detail view-id: `cnt_<Entity>.detail`; они же указываются в `@V
   и кнопка «Сохранить» не меняются.
 - Ключи `containerSurveyDetailView.noFile` и `containerFileFragment.noFile`
   удаляются, если стали неиспользуемыми.
+
+Фактически при реализации T13:
+
+- Освидетельствование: `hbox surveyBox` (100 %/100 %, `minHeight="0"`,
+  `expand="displayFile"`) → слева `scroller formScroller`
+  (`width="100%" maxWidth="40em" height="100%"`) с прежним `formLayout id="form"`
+  в одну колонку, справа `fragment displayFile` с `visible="false"`. Форма
+  осталась в scroller: полей девять, и без прокрутки длинная форма по-прежнему
+  накрывала бы кнопки.
+- Вкладка «Файлы»: `hbox filesBox` (100 %/100 %, `minHeight="0"`,
+  `expand="containerFilesDataGrid"`) → грид (`width="100%" height="100%"`,
+  прежний `minWidth="20%"`) и `fragment displayFile` с `visible="false"`.
+  Ширину панели задаёт flex: у грида и у корневого `vbox` фрагмента
+  `width="100%"`, поэтому с видимой панелью они делят строку пополам, а без неё
+  грид занимает всю ширину. Элемент `<fragment>` собственных размеров не
+  принимает (та же причина, что в T12), обёртка вокруг него не понадобилась.
+- `ContainerFileFragment.refresh()` пересчитывает панель явно
+  (`updateFilePreview(containerFilesDc.getItemOrNull())`): перезагрузка лоадера
+  сбрасывает выбор, но событие смены записи приходит не всегда.
+- Карточка договора: содержимое обёрнуто в `scroller id="contentScroller"`
+  (100 %/100 %, `minHeight="0"`, `scrollBarsDirection="VERTICAL"`), у `vbox
+  content` и `vbox warrantiesSection` снято `height="100%"` — внутри scroller
+  они растут по содержимому, а `detailActions` остаются вне прокрутки.
+  `minHeight="15em"` у грида условий сохранён.
+- `minHeight="0"` в трёх местах стоит по той же причине, что в T11 и T12:
+  собственная минимальная высота, равная высоте содержимого, не даёт
+  контейнеру ужаться, и панель кнопок уезжает под нижнюю границу окна.
+- UI-тесты: `ContainerSurveyViewsUiTest` — у нового освидетельствования
+  `displayFile` невидим и «Скачать акт» неактивна; `ContainerContractViewsUiTest`
+  — у нового договора видна подсказка и скрыт `warrantiesSection`, у
+  сохранённого наоборот.
 
 ### Статика `/img/**` (T14)
 
