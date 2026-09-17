@@ -4,6 +4,9 @@
 Дата согласования: 2026-09-16
 Пересмотр: 2026-09-17 — [questions/Q01.md](questions/Q01.md), справочные
 фильтры переносятся внутрь `rvkFilter` (T05)
+Пересмотр: 2026-09-17 — jar аддона обновлён до `0.0.3` (чистый HEAD `16f138d`);
+умолчание `lookup` в аддоне сменилось с `auto` на `none`, поэтому на
+entity-полях раздела атрибут `lookup="auto"` объявляется явно
 Предыдущая работа: [conteiner/summary.md](../conteiner/summary.md)
 
 ## Цель и границы
@@ -49,8 +52,11 @@
   `rvk-filter/build/libs/rvk-filter-0.0.1-SNAPSHOT.jar` от 2026-09-17):
   `docs/xml-api.md` «Ссылки на сущности», `docs/examples/entity-view.xml`,
   `docs/compatibility.md` (оговорка про `use-inner-join-in-condition` и
-  формат пресетов). Changelog аддона не менялся. В T05 jar пересобирается
-  как 0.0.2 по `libs/README.md`.
+  формат пресетов). Changelog аддона не менялся. В T05 jar пересобран
+  как 0.0.2 по `libs/README.md`; 2026-09-17 он заменён на 0.0.3, собранный
+  из чистого HEAD `16f138d` аддона (`entityInput`, умолчание `lookup` →
+  `none`, новый административный список пресетов; changelog по-прежнему без
+  изменений — миграция не нужна).
 - Образец `rvkFilter` в проекте: `nsi/view/vdepo/v-depo-list-view.xml`,
   тест `nsi/view/vdepo/VDepoListViewTest.java`.
 - Образец штатного фильтра-выбора из справочника:
@@ -96,10 +102,12 @@
   (`entity`, EQUAL), как у прежних выпадающих списков. Ссылки на `VStation`
   и `container.contNum` (searchProperty ремонтов и освидетельствований)
   остаются текстом.
-- Entity-поле: `<flt:propertyFilter id="<ссылка>" property="<ссылка>"/>` без
-  `type`, `operation`, `lookup` (автотип `entity`, EQUAL, `lookup="auto"`:
-  кнопка «Выбрать…» есть у `cnt_*` и `ContainerContract`, у `VOrgPassport`
-  list view нет — только поиск по вводу). Подпись — из метаданных ссылки;
+- Entity-поле: `<flt:propertyFilter id="<ссылка>" property="<ссылка>"
+  lookup="auto"/>` без `type` и `operation` (автотип `entity`, EQUAL).
+  С jar `0.0.3` умолчание `lookup` — `none`, поэтому атрибут ставится явно
+  на всех ссылочных полях: кнопка «Выбрать…» появляется у `cnt_*` и
+  `ContainerContract`, у `VOrgPassport` list view нет — там `auto`
+  разрешается в «кнопки нет», остаётся поиск по вводу. Подпись — из метаданных ссылки;
   явный `label` только где метаданные не подходят
   (`ContainerWarranty.contract` = «Гарантия к договору» → ключ
   `containerWarrantyListView.filter.contract` = «Договор» остаётся).
@@ -169,10 +177,12 @@
   <layout>
     <flt:rvkFilter id="rvkFilter" dataLoader="repairsDl" searchProperty="container.contNum" width="100%">
       <flt:filters>
-        <!-- entity-поля: без type/operation/lookup — автотип entity, EQUAL, lookup="auto" -->
-        <flt:propertyFilter id="repairType" property="repairType" defaultVisible="true" order="10"/>
-        <flt:propertyFilter id="org" property="org" defaultVisible="true" order="20"/>
-        <flt:propertyFilter id="repContract" property="repContract" defaultVisible="true" order="30"/>
+        <!-- entity-поля: без type/operation — автотип entity, EQUAL; lookup объявлен явно -->
+        <flt:propertyFilter id="repairType" property="repairType" lookup="auto"
+                            defaultVisible="true" order="10"/>
+        <flt:propertyFilter id="org" property="org" lookup="auto" defaultVisible="true" order="20"/>
+        <flt:propertyFilter id="repContract" property="repContract" lookup="auto"
+                            defaultVisible="true" order="30"/>
         <!-- текст по пути: searchProperty и ссылки на VStation -->
         <flt:propertyFilter id="containerContNum" property="container.contNum"
                             label="msg://containerRepairListView.filter.container"
