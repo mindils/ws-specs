@@ -1,10 +1,19 @@
 # Результат T03
 
 Таск: [task.md](task.md)
-Итерация: 1
+Итерация: 2
 Обновлено: 2026-09-21
 
 ## Что реализовано
+
+Итерация 2 — исправление [F01](fixes/F01.md): `PacketReplayFixtures` больше не
+прибит к схеме `main`. Индекс `tables.txt` и чтение отметок в `loadChecks`
+приводятся к схеме подключения (`select current_schema()`), внешняя `ws_store`
+остаётся как записана. `PacketReplayIT` — 7 passing (был 7 failing). Поведение
+приложения не менялось, правка только в тестовой фикстуре, поэтому
+подтверждённые проверкой 001 критерии C2–C4 не затронуты.
+
+Итерация 1:
 
 Локальное зеркало линков пакета знает признак документа-дополнения. В
 `diadoc_packet_doc_link` появилась колонка `supplement_document BOOLEAN`
@@ -26,6 +35,15 @@
 Реализация завершена, блокеров нет.
 
 ## Изменения и решения
+
+Итерация 2:
+
+- `app/src/test/java/ru/fgk/ws/app/it/PacketReplayFixtures.java` — поле
+  `appSchema` из `select current_schema()`, метод `qualify(...)` подменяет
+  схему `main` из `tables.txt` на схему подключения, `loadChecks` читает
+  `dr_wag_vrk_arch` из неё же.
+
+Итерация 1:
 
 - `diadoc/entity/DiadocPacketDocLink.java` — `supplementDocument` после
   `relatedDocument`.
@@ -64,6 +82,11 @@
 - Проверка колонки после повторного sync в тесте читается `JdbcTemplate`-ом:
   тесты идут в одной транзакции, и после второго JDBC-upsert-а кеш EclipseLink
   может вернуть прежний экземпляр линка.
+- В `tables.txt` схема `main` оставлена как есть и трактуется фикстурой как
+  «схема приложения»: файлы фикстур не правятся, а `ws_store` продолжает
+  указываться явно — она общая для всех рабочих копий. В основной рабочей
+  копии `current_schema()` и так возвращает `main`, поэтому поведение там
+  прежнее.
 
 ## Предварительные проверки
 
@@ -74,6 +97,9 @@
 | `./gradlew :app:test --tests "…SyncPacketBundleDtoJsonTest" --tests "…SyncPacketServiceTest" --tests "…entity.DocumentDataSourceTest" --tests "…mapper.PacketDocumentMapperTest"` | 33 passing, 0 failing |
 | SQL-сверка колонки в `main_f_diadoc_check` (после прогона миграций тестами) | `supplement_document boolean` есть в `diadoc_packet_doc_link` |
 | Сверка значения `DOCID_ARR` с источником | `rvk-diadoc/.../PacketAssemblyService.java:32` — `DATA_SOURCE_DOCID_ARR = "DOCID_ARR"` |
+| Итерация 2: `./gradlew :app:test --tests "ru.fgk.ws.app.it.PacketReplayIT"` | 7 passing, 0 failing |
+| Итерация 2: те же целевые тесты T03 вместе с `PacketReplayIT` | 40 passing, 0 failing |
+| Итерация 2: `./gradlew spotlessApply` | успешно |
 
 Не запускалось, оставлено проверяющему: полный `./gradlew :app:test`,
 `PacketReplayIT`, `DiadocPacketListViewTest`, `spotlessCheckAll`, повторный
@@ -99,6 +125,11 @@
   --tests "ru.fgk.ws.app.it.PacketReplayIT" \
   --tests "ru.fgk.ws.app.diadoc.view.diadocpacket.DiadocPacketListViewTest"
 ```
+
+Проверку F01 закрывает первый из этих `--tests`: `PacketReplayIT` должен дать
+7 passing. `ReceiptCostReplayIT`, `RemDetPacketReplayIT` и
+`MhReferenceCostLookupIT` в схеме worktree падают по своей причине (см.
+«Ограничения»), к F01 отношения не имеют.
 
 SQL-сверка (C1):
 
@@ -133,6 +164,17 @@ T05 (код, без прогонов в том же окне).
   сейчас берёт признак связанного из зеркала (`DiadocPacketDocLink`), поэтому
   дефект ничего видимого не ломает; чинить его в T03 — менять поведение
   существующего пути вне поручения. Стоит учесть в T04.
+- Фикстурные IT вне F01 продолжают падать в схеме worktree по той же причине,
+  но из-за собственных запросов: `ReceiptCostReplayIT` (6 failing),
+  `RemDetPacketReplayIT`, `MhReferenceCostLookupIT` читают результат наработки
+  через `select ... from main.<таблица>`. Проверено подменой файла на версию из
+  `HEAD`: `ReceiptCostReplayIT` падал теми же 6 тестами и до правки фикстуры —
+  это не регрессия F01. Тот же прибитый префикс есть ещё примерно в десятке
+  классов `app/src/test/java/ru/fgk/ws/app/it/` (`DiadocPacketCorrectionIT`,
+  `TechClaimDeadlineIT`, `TechClaimSecurityIT`, `WorkCalendarReferenceDataIT`,
+  `PtRepairPacketCorrectionIT`, `NewInspectionCountProcedureIT` и другие).
+  Правка их запросов выходит за поручение F01 и тянет на отдельный таск —
+  без неё полный `:app:test` в worktree-схеме зелёным не будет.
 - `./gradlew spotlessApply` форматирует весь проект: если параллельная сессия
   T01 держала в рабочем дереве неотформатированные файлы, они могли быть
   приведены к стилю этим прогоном. Поведение это не меняет.
