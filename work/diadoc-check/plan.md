@@ -103,7 +103,9 @@
   пакета A и B содержат СЧФ-дополнение (`supplement_document=true`), C
   поглощён; бандл несёт `supplementDocument`; зеркало rvk-ws принимает его.
 - Гейты: rvk-ws — `./gradlew :app:compileJava`, `spotlessCheckAll`,
-  `:app:test` с `0 failing`, render-проход изменённых экранов;
+  `:app:test` с `0 failing` в схеме рабочей копии (по
+  [Q01](questions/Q01.md) критерий не смягчается, привязка тестов к схеме
+  `main` чинится в T07), render-проход изменённых экранов;
   rvk-diadoc — `./gradlew test` с `0 failing`, `spotlessApply`.
 
 ## Таски
@@ -117,7 +119,8 @@
 | [T05](tasks/T05/task.md) | rvk-diadoc: СЧФ-дополнение во всех пакетах с ФПУ-26, колонка и бандл, тесты на -26 | — |
 | [T02](tasks/T02/task.md) | Нарушения при `process`: зеркало + связанные документы по настройкам, запись в результат контроля, фикс ТР-1 и `pack_checked_text` | T01, T03 |
 | [T04](tasks/T04/task.md) | UI: галочка по роли и настройке, дополнение на карточке, фильтры по контролю, фикс кнопки ВУ-23 | T01, T03 |
-| [T06](tasks/T06/task.md) | Сквозная проверка двух приложений на данных -26, полный регресс | T02, T04, T05 |
+| [T07](tasks/T07/task.md) | Убрать жёсткую схему `main` из SQL тестов и тестовых данных Liquibase | — |
+| [T06](tasks/T06/task.md) | Сквозная проверка двух приложений на данных -26, полный регресс | T02, T04, T05, T07 |
 
 ## Параллельность и тестирование
 
@@ -128,6 +131,7 @@
 | T05 | репозиторий `rvk-diadoc` целиком | БД `localhost:5436`, порт 8081, свой Gradle daemon | T01, T03 | независимо |
 | T02 | `diadoc/service/{PacketParserService,DiadocPacketCheckResultService}.java`, новый `DiadocPacketViolationCheckService.java`, `dr/entity/DrDiadocOperRepairPacket.java` (тип поля), `liquibase/01-tbl/tbl-dr_diadoc_oper_repair_paket.xml`, ключи `diadoc.service/violation.*`, новый IT | те же, что T01 | T04 | после T04 или до — по очереди |
 | T04 | `diadoc/view/diadocpacket/*`, `pt/view/ptrepairpacket/*`, `dr/view/drdiadocoperrepairpacket/DrDiadocOperRepairPacketVu23ListView.java` + XML, ключи этих view, UI-тесты | те же + браузер | T02 | последовательно с T02 |
+| T07 | 21 тестовый класс в `app/src/test/java` (`it/*IT`, `SyncPacketServiceTest`, `DrOperRepairParserServiceTest`, два UI-теста), javadoc `BaseIT`, 7 файлов `app/src/test/resources/ru/fgk/ws/app/liquibase/sql/*.sql` | БД `main_f_diadoc_check`, Gradle daemon | — | один, перед T06; схема пересоздаётся |
 | T06 | фикстуры/тесты, `result.md`; код — только исправления найденного | все: обе БД, порты 8081 и 8082, браузер | — | последним |
 
 Изоляции внутри rvk-ws нет: одна схема `main_f_diadoc_check` в
@@ -142,7 +146,10 @@ T04, T06. Liquibase обеих задач T01/T03 накатывается на 
 
 Волна 1 — T01, T03, T05 в трёх сессиях (`task-execute`). Волна 2 — T02 и
 T04 после `done` у T01 и T03. Волна 3 — T06 после `done` у T02, T04, T05.
-Затем `task-close`.
+Волна 4 — T07 (появился по [Q01](questions/Q01.md): полный `:app:test`
+в рабочей копии упирается в жёсткую схему `main` в тестах), после его
+`done` — повторная проверка T06 только по критерию C4. Затем
+`task-close`.
 
 Окружение rvk-ws: `docker info`, `(cd docker && docker compose ps)` — все
 сервисы уже подняты; `app/src/test/resources/application-test-local.properties`

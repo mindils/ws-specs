@@ -1,0 +1,90 @@
+ru.fgk.ws.app.dr.service.DrOperRepairParserServiceTest#parsePacket_receiptCostAndMismatchCheck()
+ru.fgk.ws.app.it.ContractRepairCountIT#Сохранённый пакет ремонта учитывается в счётчике принятых ремонтов
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#maintainabilityCorrection_reprocessedIntoOwnRow_rewritesPacket()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#maintainabilityCorrection_updatesLatestOfSeveralSavedPackets()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#maintainabilityCorrection_updatesPreviouslySavedPacket()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#maintainabilityPacket_linksRepairFromVu23FoundByTorId()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#packetWithBlankTorPackId_isNotLinkedToForeignRepair()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#partsPacket_linksRepairFromVu23FoundByTorId()
+ru.fgk.ws.app.it.DiadocPacketCorrectionIT#removedPartsCorrection_doesNotOverwriteUnrelatedPacket()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_foreignDepoWithoutRzdCode_findsNoRepair()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_happyPath_savesArchAndContract()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_mergesSeparateMh1mPacketDetails()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_multipleClaimAndSupply_violationsAccumulated()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_multipleMh1Documents_aggregatesRowsAndNumbers()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_olderPreviousPacket_processesNormally()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_previousContractWithoutFixedDate_processesNormally()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_relatedDocsFromOtherMessage_notCountedTwice()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_reprocess_doesNotDuplicateMhAndEquipment()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_reprocess_doesNotDuplicateWorkAndDetail()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_rzdDepoCode_usedEverywhereAndPacketDepoKeptAsActDepo()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_stalePacket_savesErrorAndKeepsPreviousData()
+ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT#parsePacket_withoutRzdDepoCode_keepsPacketDepoAndLeavesActDepoEmpty()
+ru.fgk.ws.app.it.DrPlanRepairParserServiceIT#parsePacket_planPacket_savesContractHeaderAndArch()
+ru.fgk.ws.app.it.DrPlanRepairParserServiceIT#parsePacket_reprocess_updatesInPlaceNotDuplicated()
+ru.fgk.ws.app.it.FullPackCheckedTextIT#allThreeKinds_shownAsSeparateBlocksInOrder()
+ru.fgk.ws.app.it.FullPackCheckedTextIT#kindsStoredInOwnColumns()
+ru.fgk.ws.app.it.Mh1mPacketMergeIT#Деталь другого типа не увеличивает счётчик колёсных пар
+ru.fgk.ws.app.it.Mh1mPacketMergeIT#Колёсные пары считаются по количеству в строке
+ru.fgk.ws.app.it.Mh1mPacketMergeIT#Слияние считает колёсные пары по акту МХ-1 и не падает на типе детали
+ru.fgk.ws.app.it.Mh1mPacketMergeIT#Строки акта попадают в карточку ремонта
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#clearPacket_removesReceiverSideRelations_keepsDonorSide()
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#resolveOrigins_detailReturnedToOwnWagon_skipsLink()
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#resolveOrigins_donorNotFound_addsWarning_noRelation()
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#resolveOrigins_donorNotInPayment_addsWarning_noRelation()
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#resolveOrigins_donorWithPacketAndPayment_createsRelationAndFillsRow()
+ru.fgk.ws.app.it.MhDetailOriginServiceIT#resolveOrigins_noMh3Date_addsSingleWarning_noRelation()
+ru.fgk.ws.app.it.MhReferenceCostLookupIT#Без цен по справочнику суммы равны стоимости из актов
+ru.fgk.ws.app.it.MhReferenceCostLookupIT#Стоимость по справочнику берётся за единицу и умножается на количество
+ru.fgk.ws.app.it.MhReferenceCostLookupIT#Строка без цены по справочнику учитывается стоимостью из акта
+ru.fgk.ws.app.it.NsiClaimTermEditRoleIT#C4: административная роль ведёт нормы сроков
+ru.fgk.ws.app.it.NsiClaimTermEditRoleIT#C4: административная роль читает и ведёт календарь
+ru.fgk.ws.app.it.PtRepairPacketCorrectionIT#findLatestByParentMessage_returnsPacketWithLatestOperationsTime()
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Кассетные подшипники: цена подбирается по состоянию
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Нет подходящей строки справочника — предупреждение, стоимость пустая
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Расхождение цены с документом — отметка с обеими стоимостями
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Совпадение цены отметок не даёт
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Состояние из строки не подменяется: для другого состояния цены нет
+ru.fgk.ws.app.it.ReceiptCostReplayIT#Цена подбирается по ободу, типу оси и состоянию колёсной пары
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Изменение зоны ДЮ пересчитывает сроки претензии
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Конкурентная перезапись расчёта отклоняется контролем версии
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Массовый пересчёт повторяем и не плодит строк
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Ошибка пересчёта при публикации не оставляет смеси старых и новых расчётов
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Ошибка расчёта откатывает изменение исходных данных
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Пользователю расчёт доступен только на чтение
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Предварительный расчёт совпадает с сохранённым
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Прямой импорт мимо приложения восстанавливается массовым пересчётом
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Публикация ревизии пересчитывает сроки и штампует новый номер
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Сохранение претензии сразу создаёт строку расчёта
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Ставший неприменимым этап очищает ранее сохранённые даты
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Строка расчёта существует и тогда, когда применим один этап из семи
+ru.fgk.ws.app.it.TechClaimDeadlineIT#Удаление претензии убирает её расчёт
+ru.fgk.ws.app.it.TechClaimDemoDataIT#Демо-набор досчитан боевым расчётом и остаётся в базе
+ru.fgk.ws.app.it.TechClaimSecurityIT#C1: административная роль ведёт обе зоны и только читает технические данные
+ru.fgk.ws.app.it.TechClaimSecurityIT#C1: политики роли ДЭПС совпадают с матрицей прав
+ru.fgk.ws.app.it.TechClaimSecurityIT#C1: политики роли ДЮ совпадают с матрицей прав
+ru.fgk.ws.app.it.TechClaimSecurityIT#C2: ДЭПС правит свою зону и только читает зону ДЮ
+ru.fgk.ws.app.it.TechClaimSecurityIT#C3: ДЮ правит свою зону, не правит и не создаёт претензию
+ru.fgk.ws.app.it.TechClaimSecurityIT#C4: обе роли читают сроки, грид и НСИ, но не пишут в них
+ru.fgk.ws.app.it.TechClaimSecurityIT#C5: ДЭПС заводит дополнительную претензию с парной строкой ДЮ
+ru.fgk.ws.app.it.TechClaimSecurityIT#C5: ДЮ не может завести претензию, ничего не создаётся
+ru.fgk.ws.app.it.TechClaimSecurityIT#C5: после мягкого удаления претензии индекс переиспользуется
+ru.fgk.ws.app.it.TechClaimSecurityIT#Одновременное создание двух претензий одной отцепки даёт разные индексы
+ru.fgk.ws.app.it.TechClaimViewIT#View читается через DataManager: вычисляемые суммы и срок предъявления
+ru.fgk.ws.app.it.TechClaimViewIT#Завершённый этап фиксирует степень по факту, открытый берёт дату БД
+ru.fgk.ws.app.it.TechClaimViewIT#Колонки отчёта: код неисправности, дни рассмотрения, отказ по иску
+ru.fgk.ws.app.it.TechClaimViewIT#Признак устаревшего расчёта: нет строки либо не последняя опубликованная ревизия
+ru.fgk.ws.app.it.TechClaimViewIT#Сроки этапов отдаются как есть, степень считается относительно даты БД
+ru.fgk.ws.app.it.TechClaimViewIT#Фильтр и сортировка по вычисляемой колонке выполняются в БД, а не по странице
+ru.fgk.ws.app.it.TechClaimViewIT#Фильтр, сортировка и count по сроку этапа выполняются в БД
+ru.fgk.ws.app.it.TechClaimViewIT#Фильтр, сортировка и count по степени просрочки выполняются в БД
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#C1: в справочнике 16 норм - семь «техн» и девять «повр»
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#C2: дата календаря уникальна - двух статусов у одного дня быть не может
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#C2: число рабочих дней совпадает с официальным производственным календарём
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#C3: норма этапа уникальна по виду претензии и коду операции
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#C3: повторный прогон наполнения не дублирует и не затирает правки администратора
+ru.fgk.ws.app.it.WorkCalendarReferenceDataIT#Ревизии: публиковать нечего - актуальная версия не меняется
+ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest#Карточка открывается со всеми вкладками и подставляет недостающую строку ДЮ
+ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest#Одна кнопка «Сохранить» пишет обе таблицы, суммы формы совпадают с колонками view
+ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest#Ошибка календаря отклоняет сохранение и не оставляет правку в базе
+ru.fgk.ws.app.nsi.view.claimtermnorm.NsiClaimTermNormViewsUiTest#C2: список открывается, вид претензии показан текстом, подписи колонок по ВагТК
