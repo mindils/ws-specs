@@ -1,7 +1,7 @@
 # Результат T01
 
 Таск: [task.md](task.md)
-Итерация: 1
+Итерация: 2
 Обновлено: 2026-09-21
 
 ## Что реализовано
@@ -19,15 +19,43 @@
 создаёт строку умолчаний при первом обращении со значениями
 `true,false,false,false`; `resolve(DiadocContractor)` отдаёт строку контрагента,
 а при её отсутствии или неопределённом контрагенте — умолчания;
-`resolveForPacket(DiadocPacket)` разрешает настройки по `packet.getContractor()`.
-Кеша нет, инъекция только через конструктор. Контракт (`record
-DiadocProcessingSettings`) — тот, что зафиксирован планом для T02 и T04.
+`resolveByContractorCode(String)` делает то же по коду контрагента, и через него
+`resolveForPacket(DiadocPacket)` разрешает настройки пакета (итерация 2,
+[F01](fixes/F01.md)). Кеша нет, инъекция только через конструктор. Контракт
+(`record DiadocProcessingSettings`) — тот, что зафиксирован планом для T02 и T04.
 
 Оба экрана и связанные detail-диалоги выдаёт новая роль
 `diadoc-settings-admin` (`DiadocSettingsAdminRole`, scope UI) вместе со
 specific-контекстом `DiadocSettingsEditEnabled`
 (`diadocSettingsEdit.enabled`) — его в T04 читает галочка на карточке пакета.
 Рабочей роли `ws-user` настройки по-прежнему недоступны.
+
+## Итерация 2 — исправление [F01](fixes/F01.md)
+
+`resolveForPacket(packet)` больше не обращается к ссылке
+`DiadocPacket.contractor`. Ссылка объявлена
+`@JoinColumn(name = "contractor_code", referencedColumnName = "code")`, поэтому
+ленивая подгрузка ищет контрагента по значению кода как по первичному ключу и
+падает `IllegalArgumentException: … for parameter entityId with expected type of
+class java.lang.Long …`, как только пакет пришёл в сервис от загрузчика без
+`contractor` в fetch plan (кнопка «Обработать повторно» на карточке пакета).
+Добавлен `resolveByContractorCode(@Nullable String code)` — строка
+`DiadocSignSettings` по `e.contractor.code = :code` (`maxResults(1)`), при
+пустом коде или отсутствии строки умолчания; `resolveForPacket` переведён на
+`packet.getContractorCode()` (обычная колонка, приходит с любым загрузчиком).
+Причина записана в javadoc класса. `resolve(@Nullable DiadocContractor)` не
+менялся — в основном коде он теперь не вызывается, его контракт нужен T02/T04 и
+проверяется тестами.
+
+В `DiadocProcessingSettingsIT` добавлен кейс
+`resolveForPacketReadWithoutContractorReference`: пакет вставляется в
+`diadoc_packet` и читается `dataManager.load(DiadocPacket.class).id(..).one()`
+без fetch plan — со строкой контрагента возвращаются её значения, после удаления
+строки — умолчания. Прежний кейс на `resolveForPacket` переведён с
+`setContractor` на `setContractorCode`: ссылка на резолв больше не влияет.
+Проверено, что кейс ловит дефект: с прежней реализацией
+(`resolve(packet.getContractor())`) он падает ровно тем сообщением, о котором
+сообщил пользователь.
 
 ## Изменения и решения
 
@@ -74,6 +102,10 @@ specific-контекстом `DiadocSettingsEditEnabled`
 | `./gradlew :app:test --tests "ru.fgk.ws.app.it.DiadocProcessingSettingsIT" --tests "ru.fgk.ws.app.it.DiadocSettingsAdminRoleIT"` | 8 passing |
 | Повторный прогон `DiadocProcessingSettingsIT` (второй проход миграций по существующей схеме) | 5 passing, changeSet-ы 4–7 отработали `MARK_RAN`, ошибок Liquibase нет |
 | SQL-сверка колонок в `main_f_diadoc_check` | `diadoc_settings` и четыре колонки `diadoc_sign_settings` есть, `NOT NULL`, значения по умолчанию `true/false/false/false`, `id` — identity |
+| Итерация 2: `./gradlew :app:compileJava`, `:app:compileTestJava`, `spotlessApply`, `spotlessCheckAll` | успешно |
+| Итерация 2: `./gradlew :app:test --tests "ru.fgk.ws.app.it.DiadocProcessingSettingsIT"` | 6 passing |
+| Итерация 2: `./gradlew :app:test --tests "ru.fgk.ws.app.it.DiadocProcessingSettingsIT" --tests "ru.fgk.ws.app.diadoc.service.*" --tests "ru.fgk.ws.app.it.DiadocViolationCheckReplayIT"` | 153 passing, 0 failing (регрессия T02 на том же `resolveForPacket`) |
+| Итерация 2: временный откат `resolveForPacket` на прежнюю реализацию | 2 failing с `IllegalArgumentException … parameter entityId`, т.е. новый кейс воспроизводит дефект; откат снят |
 | Механические проверки дескрипторов (`jmix-ide-static-analysis`, п. 3) | чисто: пролог XML, package-строки, 0-байтовые файлы среди изменённых отсутствуют, все `msg://` изменённых XML и `menu.xml` резолвятся в `messages_ru.properties` |
 | Браузерный smoke: `bootRun` (8082), `/local-login`, пользователь с `diadoc-settings-admin` | оба пункта меню видны; «Настройки Диадок по умолчанию» открываются с четырьмя чекбоксами и начальными значениями, сохранение даёт «Настройки сохранены» и строку в `diadoc_settings`; список настроек по контрагентам показывает пять колонок с русскими подписями; диалог создания приходит с блоком «Обработка пакетов», заполненным из умолчаний, сохранение пишет строку в `diadoc_sign_settings`; лишнего `s` после заголовка «Тип пакета» нет; сырых `msg://` нет |
 | Браузерный негатив: тот же стенд под пользователем только с `ws-user` | пунктов меню нет, `/diadoc/settings` и `/diadoc-sign-settings` дают Access Denied (`UiShowViewConstraint` в логе) |
@@ -81,6 +113,12 @@ specific-контекстом `DiadocSettingsEditEnabled`
 Единственная ошибка в консоли браузера на всех экранах — загрузка аватара с
 `info.main.vgk` (корпоративный хост, снаружи контура не резолвится), к
 изменениям T01 отношения не имеет.
+
+Итерация 2 не трогала entity, changelog-и, экраны, роль и messages, поэтому
+браузерный smoke и SQL-сверка повторно не выполнялись — их результаты итерации 1
+остаются в силе. Карточка пакета (`DiadocPacketDetailView`) в область T01 не
+входит: перезагрузка пакета с fetch plan после «Обработать повторно» — предмет
+[T04/F01](../T04/fixes/F01.md).
 
 Не запускалось, оставлено проверяющему: полный `./gradlew :app:test`
 (в том числе `DiadocPacketFlowServiceTest`, `DiadocDocumentFlowServiceTest`
@@ -110,8 +148,14 @@ IDE-инспекция (`get_file_problems`) в этой сессии недос
 ./gradlew spotlessCheckAll
 ./gradlew :app:test --tests "ru.fgk.ws.app.it.DiadocProcessingSettingsIT" \
   --tests "ru.fgk.ws.app.it.DiadocSettingsAdminRoleIT" \
-  --tests "ru.fgk.ws.app.diadoc.service.*"
+  --tests "ru.fgk.ws.app.diadoc.service.*" \
+  --tests "ru.fgk.ws.app.it.DiadocViolationCheckReplayIT"
 ```
+
+Итерация 2 добавляет к проверке `DiadocViolationCheckReplayIT` (тот же
+`resolveForPacket` внутри `process`). Сценарий с карточкой пакета
+(«Обработать повторно» больше не даёт «Ошибка обработки») проверяется вместе с
+[T04/fixes/F01.md](../T04/fixes/F01.md): в T01 карточка не менялась.
 
 SQL-сверка (C1):
 
@@ -157,6 +201,12 @@ values (gen_random_uuid(), '<имя>', 'diadoc-settings-admin', 'resource'),
 
 ## Ограничения и связанные изменения
 
+- Настройки пакета разрешаются по `contractor_code`. У пакета без кода или с
+  кодом, которого нет в `nsi_diadoc_contractor`, действуют умолчания — как и
+  раньше для пакета без контрагента.
+- `resolve(@Nullable DiadocContractor)` после итерации 2 в основном коде не
+  вызывается: оставлен по решению [Q02](../../questions/Q02.md) как часть
+  контракта сервиса, покрыт тестами.
 - `DiadocSignSettings` больше не сохраняется без значений четырёх флагов.
   Кода, создающего её вне экрана настроек, в проекте нет, поэтому на другие
   таски это не влияет; строки существующих БД закрываются `defaultValueBoolean`.
