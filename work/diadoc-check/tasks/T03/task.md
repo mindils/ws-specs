@@ -1,6 +1,6 @@
 # T03 — Зеркало rvk-ws: колонка supplement_document, sync, DTO, DOCID_ARR
 
-Статус: todo
+Статус: ready_for_verify
 План: [plan.md](../../plan.md)
 Зависимости: нет
 Сложность: easy — одна колонка сквозь entity/changelog/DTO/upsert по образцу
@@ -95,11 +95,11 @@ diadoc_packet_doc_link` содержит колонку. Негатив: JSON б
 
 ## Прогресс и продолжение
 
-- [ ] Entity, changelog, messages
-- [ ] Бандл и upsert
-- [ ] DTO и маппер, `DOCID_ARR`
-- [ ] Тесты
-- [ ] Передать результат на независимую проверку.
+- [x] Entity, changelog, messages
+- [x] Бандл и upsert
+- [x] DTO и маппер, `DOCID_ARR`
+- [x] Тесты
+- [x] Передать результат на независимую проверку.
 
-Ближайший шаг: открыть `DiadocPacketDocLink.java` и changelog линка.
+Ближайший шаг: независимая проверка по [result.md](result.md).
 Препятствия: нет
