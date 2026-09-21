@@ -1,12 +1,12 @@
 # T03 — Зеркало rvk-ws: колонка supplement_document, sync, DTO, DOCID_ARR
 
-Статус: ready_for_verify
+Статус: todo
 План: [plan.md](../../plan.md)
 Зависимости: нет
 Сложность: easy — одна колонка сквозь entity/changelog/DTO/upsert по образцу
 `relatedDocument`, контракт задан планом
 Сложность проверки: easy — unit-тесты sync и SQL-сверка
-Актуальная проверка: нет
+Актуальная проверка: [checks/001.md](checks/001.md)
 
 ## Коротко
 
@@ -101,5 +101,5 @@ diadoc_packet_doc_link` содержит колонку. Негатив: JSON б
 - [x] Тесты
 - [x] Передать результат на независимую проверку.
 
-Ближайший шаг: независимая проверка по [result.md](result.md).
+Ближайший шаг: выполнение исправления [fixes/F01.md](fixes/F01.md).
 Препятствия: нет
