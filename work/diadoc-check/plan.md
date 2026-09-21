@@ -73,7 +73,8 @@
 | Умолчания — singleton `DiadocSettings` (`diadoc_settings`, `Long id`, те же четыре поля; сервис создаёт строку при первом чтении по образцу `CaseOneSettingsService`). Применяются, когда у контрагента нет строки или контрагент пакета не определён. Начальные значения: `showRelatedDocuments=true`, три проверки `false`. Новая строка контрагента инициализируется из умолчаний | Ответ пользователя |
 | Контракт чтения: `ru.fgk.ws.app.diadoc.service.DiadocProcessingSettingsService` с `record DiadocProcessingSettings(boolean showRelatedDocuments, boolean checkDuplicateTorDocument, boolean checkCrossPacketReference, boolean checkMissingDocument)` и методами `resolve(@Nullable DiadocContractor)`, `resolveForPacket(DiadocPacket)` (по `packet.getContractor()`), `getDefaults()`. Без кеша: строк мало, запрос дешёвый, правка в UI подхватывается сразу | Техническое; образец `CaseOneSettingsService` |
 | Одна настройка `showRelatedDocuments` управляет и показом связанных на карточке, и проверкой связанных при `process` | Ответ пользователя |
-| Админ — роль `diadoc-settings-admin` (`app/src/main/java/ru/fgk/ws/app/security/diadoc/DiadocSettingsAdminRole.java`, scope UI): `EntityPolicy ALL` + атрибуты MODIFY на `DiadocSettings`, `DiadocSignSettings`, `DiadocSignSettingsPacketType`, `DiadocSignSettingsDocType`; READ на `DiadocContractor`, `DiadocDocumentType`; view/menu policies всех экранов настроек Диадок; `@SpecificPolicy(resources = DiadocSettingsEditEnabled.NAME)` где `NAME = "diadocSettingsEdit.enabled"` (`.../security/diadoc/specific/DiadocSettingsEditEnabled`). Галочка на карточке пакета видна только при этой policy; `system-full-access` покрывает `*` | Ответ пользователя; образец `DiadocSigningEditRole` |
+| Админ — роль `diadoc-settings-admin` (`app/src/main/java/ru/fgk/ws/app/security/diadoc/DiadocSettingsAdminRole.java`, scope UI): `EntityPolicy ALL` + атрибуты MODIFY на `DiadocSettings`, `DiadocSignSettings`, `DiadocSignSettingsPacketType`, `DiadocSignSettingsDocType`; READ на `DiadocContractor`, `DiadocDocumentType`; view/menu policies всех экранов настроек Диадок; `@SpecificPolicy(resources = DiadocSettingsEditEnabled.NAME)` где `NAME = "diadocSettingsEdit.enabled"` (`.../security/diadoc/specific/DiadocSettingsEditEnabled`). Кнопка «Показать/Скрыть связанные документы» на карточке пакета видна только при этой policy и переключает состав только на экране (первая редакция — галочка — заменена по [Q02](questions/Q02.md): чекбокс блокируется read-only режимом карточки у пользователей без UPDATE на `DiadocPacket`); `system-full-access` покрывает `*` | Ответ пользователя; образец `DiadocSigningEditRole`; [Q02](questions/Q02.md) |
+| `resolveForPacket` резолвит настройки по `DiadocPacket.contractorCode` (`resolveByContractorCode`, запрос по `e.contractor.code`), а не через ссылку `contractor`: она джойнится по неключевой колонке и не поддерживает ленивую подгрузку. Перезагрузка пакета на карточке — с fetch plan контейнера | Техническое, [Q02](questions/Q02.md) |
 | Нарушения из зеркала пишутся кодом `VIOLATION` в результат контроля того же типа пакета, что и остальные проверки (`PackCheckedHolder`), после парсера и до чтения результата в `PacketParserService.dispatchAndResolve`. Тексты — из `messages_ru.properties`, ключи `ru.fgk.ws.app.diadoc.service/violation.*` (см. T02); `message` источника — запасной вариант, неизвестный `violationType` пропускается с WARN | Ответ пользователя; правило i18n проекта |
 | Проверка связанных документов выполняется при `showRelatedDocuments=true` для линков пакета с `relatedDocument=true` и `supplementDocument!=true`: (а) исходный пакет `originalMessageId` в незавершённом подписании (`DiadocDocumentFlowService.checkCanApprove(originalMessageId) == PROCESS_IN_PROGRESS`, т.е. `PacketFlow` в `TO_SIGN, PENDING_SIGN, PENDING_SIGN_REJECT, PENDING_REJECT, TO_REJECT`) либо `PacketDocumentFlow` по `entityId` в нефинальном статусе → `VIOLATION` «документ в процессе подписания»; (б) иначе `signature_status='8015'` → «В системе есть отклонённые документы: …»; `'8002'` → «В системе есть подписанные документы: …». СЧФ-дополнения из проверки исключены | Ответ пользователя 2026-09-21 (два ответа) |
 | СЧФ-дополнение: в `diadoc_packet_doc_link` обоих проектов новая колонка `supplement_document BOOLEAN` (rvk-diadoc — `defaultValueBoolean="false"`), `related_document` и `main_document` не меняют смысл. Контракт бандла `getPacketForSync`: `links[].supplementDocument` (Boolean); `DocumentItemDto` источника — `is_supplement`. На карточке пакета фильтр скрывает только `related && !supplement`; дополнение помечается иконкой `vaadin:paperclip` с подсказкой «Дополнение к ФПУ-26» | Ответ пользователя |
@@ -88,9 +89,11 @@
   умолчанию» доступны роли `diadoc-settings-admin` и `system-full-access`,
   недоступны `ws-user`; поля сохраняются; резолв настроек для контрагента
   без строки даёт умолчания.
-- На карточке пакета галочка «Показать связанные документы» видна только
-  админу, для остальных состав документов определяется настройкой
-  контрагента; СЧФ-дополнение показывается всегда с иконкой.
+- На карточке пакета кнопка «Показать/Скрыть связанные документы» видна
+  только админу и переключает состав на экране, для остальных состав
+  документов определяется настройкой контрагента; СЧФ-дополнение
+  показывается всегда с иконкой; «Обработать повторно» с карточки не даёт
+  ошибки ([Q02](questions/Q02.md)).
 - `process` пакета контрагента с включёнными проверками пишет в результат
   контроля русские тексты нарушений из зеркала и проверки связанных
   документов; `ok=false`; при выключенных проверках поведение прежнее.
@@ -148,8 +151,12 @@ T04, T06. Liquibase обеих задач T01/T03 накатывается на 
 T04 после `done` у T01 и T03. Волна 3 — T06 после `done` у T02, T04, T05.
 Волна 4 — T07 (появился по [Q01](questions/Q01.md): полный `:app:test`
 в рабочей копии упирается в жёсткую схему `main` в тестах), после его
-`done` — повторная проверка T06 только по критерию C4. Затем
-`task-close`.
+`done` — повторная проверка T06 только по критерию C4. Волна 5 —
+исправления по замечаниям пользователя ([Q02](questions/Q02.md)):
+`task-execute` для [T01/fixes/F01.md](tasks/T01/fixes/F01.md) и
+[T04/fixes/F01.md](tasks/T04/fixes/F01.md) (код параллельно, тесты и
+`bootRun` по очереди: сначала T01, затем T04), после `done` обоих —
+`task-verify` T06 по критерию C3. Затем `task-close`.
 
 Окружение rvk-ws: `docker info`, `(cd docker && docker compose ps)` — все
 сервисы уже подняты; `app/src/test/resources/application-test-local.properties`

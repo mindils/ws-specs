@@ -1,6 +1,6 @@
 # T04 — UI: галочка по роли и настройке, дополнение на карточке, фильтры по контролю
 
-Статус: done
+Статус: in_progress — исправление [F01](fixes/F01.md)
 План: [plan.md](../../plan.md)
 Зависимости: T01, T03
 Сложность: medium — три существующих экрана, образцы фильтров и скрытия по
@@ -49,10 +49,13 @@ DiadocPacket)` → `showRelatedDocuments`; `DiadocSettingsEditEnabled`
 
 Требуемое поведение:
 
-1. Карточка: при открытии значение галочки = `showRelatedDocuments`
-   контрагента пакета (умолчания, если контрагента нет); галочка
-   `setVisible(permitted)` по `DiadocSettingsEditEnabled` — админ может
-   переключить в рамках экрана. `filterDocuments` при `false` скрывает
+1. Карточка: при открытии показ связанных = `showRelatedDocuments`
+   контрагента пакета (умолчания, если контрагента нет); переключает его
+   кнопка «Показать/Скрыть связанные документы», видимая только по
+   `DiadocSettingsEditEnabled`, — админ меняет состав в рамках экрана,
+   настройка не пишется (первая редакция — галочка — заменена кнопкой по
+   [Q02](../../questions/Q02.md): чекбокс блокируется read-only режимом
+   карточки). `filterDocuments` при `false` скрывает
    только `relatedDocument=true && !supplementDocument`. В колонке
    `relatedIcon` для `supplementDocument=true` — `vaadin:paperclip`,
    tooltip `supplementIcon.tooltip=Дополнение к ФПУ-26`
@@ -66,7 +69,8 @@ DiadocPacket)` → `showRelatedDocuments`; `DiadocSettingsEditEnabled`
    на ВУ-23 — рядом с `acceptStatusFilter`. Кнопка «Текст ошибки» —
    сравнивать enum с enum (`selected.getPackCheckedCode() == VIOLATION`),
    включать и для `WARNING`/`WARNING_ECP`, если текст есть.
-3. Ключи: `showRelatedCheckbox.label` остаётся; новые —
+3. Ключи: `showRelatedButton.show` / `showRelatedButton.hide` вместо
+   `showRelatedCheckbox.label`; новые —
    `supplementIcon.tooltip`, `packCheckedCodeFilter.label=Результат контроля`,
    `packCheckedCodeFilter.notChecked=Не проверялся` в блоках своих view.
 
@@ -101,10 +105,12 @@ daemon; код параллельно с T02, тесты и `bootRun` — по �
 
 ## Критерии приёмки
 
-- C1: Под `ws-user` галочки нет; при `showRelatedDocuments=false` у
+- C1: Под `ws-user` кнопки нет; при `showRelatedDocuments=false` у
   контрагента связанные скрыты, дополнения видны с иконкой; при `true` —
-  всё видно. Под `diadoc-settings-admin` галочка видна с предустановленным
-  значением и переключается.
+  всё видно. Под `diadoc-settings-admin` (в том числе без UPDATE на
+  `DiadocPacket`) кнопка видна с текстом по текущему состоянию и
+  переключает состав; «Обработать повторно» с карточки не даёт «Ошибка
+  обработки».
 - C2: На обоих списках фильтр по результату контроля ограничивает строки
   (в т.ч. «Не проверялся»); на `pt-repair-packets` значение сохраняется в
   `ViewSettings` между открытиями.
@@ -137,6 +143,12 @@ browser-verified`.
 - [x] Фильтры списков и кнопка ВУ-23
 - [x] Тесты и инспекция
 - [x] Независимая проверка пройдена: [001](checks/001.md)
+- [ ] Исправление [F01](fixes/F01.md): ошибка «Обработать повторно»,
+      кнопка вместо галочки (по [Q02](../../questions/Q02.md)), новая
+      итерация на проверку.
 
-Ближайший шаг: сквозная проверка в [T06](../T06/task.md)
+Ближайший шаг: `task-execute` с [fixes/F01.md](fixes/F01.md); код
+параллельно с [T01/F01](../T01/fixes/F01.md), тесты и `bootRun` — после
+него
 Препятствия: нет
+Связанные исправления: [F01](fixes/F01.md)
