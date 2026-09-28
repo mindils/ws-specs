@@ -1,0 +1,84 @@
+time_seconds;class_name;test_name
+27.937;ru.fgk.ws.app.container.view.ContainerRvkFilterUiTest;Условие по договору оставляет в ремонтах только записи этого договора
+25.417;ru.fgk.ws.app.container.view.ContainerRvkFilterUiTest;Поиск по номеру контейнера оставляет в ремонтах только его записи
+14.188;ru.fgk.ws.app.container.view.ContainerRvkFilterUiTest;Ссылочные поля списков раздела объявляют кнопку справочника
+14.108;ru.fgk.ws.app.container.view.ContainerRepairViewsUiTest;Список ремонтов открывается
+4.011;ru.fgk.ws.app.ai.AiConversationViewsUiTest;starterViewOpens()
+3.441;ru.fgk.ws.app.it.PacketReplayIT;Договор найден: договорные проверки отработали без замечаний
+3.304;ru.fgk.ws.app.it.PacketReplayIT;Тип детали листа комплектации определяется
+3.136;ru.fgk.ws.app.it.Tr2PriceAnalyzeWagonListIT;wagonListSizeMatchesCellValue_presentedDocs()
+3.045;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;Битое зеркало нарушений не срывает обработку, а отмечается нарушением
+2.986;ru.fgk.ws.app.it.Tr2PriceAnalyzeWagonListIT;wagonListSizeMatchesCellValue_signedDocs()
+2.902;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;Повторная обработка не двоит строки нарушений
+2.792;ru.fgk.ws.app.it.Tr2PriceAnalyzeWagonListIT;wagonListSizeMatchesCellValue_mhCostFromDocuments()
+2.663;ru.fgk.ws.app.container.view.ContainerNsiViewsUiTest;allDictionaryDetailViews_displayForNewEntity()
+2.651;ru.fgk.ws.app.it.PacketReplayIT;Деталь, попавшая и в МХ-3, и в РДВ, в замены считается один раз
+2.450;ru.fgk.ws.app.container.view.ContainerNsiViewsUiTest;allDictionaryListViews_display()
+2.443;ru.fgk.ws.app.it.ReceiptCostReplayIT;Кассетные подшипники: цена подбирается по состоянию
+2.340;ru.fgk.ws.app.it.PacketReplayIT;Деталь найдена на складе: расхождение по депо, совпадение — без замечаний
+2.208;ru.fgk.ws.app.it.KpTurnoverWorkListIT;workListQuantityMatchesCellValue_presentedDocs()
+2.068;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;При выключенном показе связанных документов их состояние не проверяется
+2.031;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;Выключенные проверки оставляют прежний результат разбора
+2.007;ru.fgk.ws.app.it.ReceiptCostReplayIT;Совпадение цены отметок не даёт
+1.982;ru.fgk.ws.app.it.ReceiptCostReplayIT;Цена подбирается по ободу, типу оси и состоянию колёсной пары
+1.923;ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest;Одна кнопка «Сохранить» пишет обе таблицы, суммы формы совпадают с колонками view
+1.904;ru.fgk.ws.app.it.PacketReplayIT;Плановый пакет: стоимость подачи/уборки сверена с договором
+1.888;ru.fgk.ws.app.diadoc.view.diadocpacket.DiadocPacketListViewTest;initialLoadShowsAllRowsAndFiltersCanBeAppliedAndCleared()
+1.866;ru.fgk.ws.app.it.MhReferenceCostLookupIT;Стоимость по справочнику берётся за единицу и умножается на количество
+1.859;ru.fgk.ws.app.dr.service.DrOperRepairTr2ParserServiceTest;parsePacket_torPackIdAndOldFromVPacketDocumentReport()
+1.819;ru.fgk.ws.app.ai.AiConversationViewsUiTest;listViewOpens()
+1.796;ru.fgk.ws.app.it.ReceiptCostReplayIT;Нет подходящей строки справочника — предупреждение, стоимость пустая
+1.784;ru.fgk.ws.app.it.PacketReplayIT;Пакет ТР-2: проверки применяются, лишних сообщений нет
+1.767;ru.fgk.ws.app.it.MhReferenceCostLookupIT;Без цен по справочнику суммы равны стоимости из актов
+1.718;ru.fgk.ws.app.dr.view.drdiadocoperrepairpacket.DrDiadocOperRepairPacketVu23ListViewTest;packCheckedCodeFilterNarrowsRowsAndSupportsNotCheckedAndReset()
+1.705;ru.fgk.ws.app.container.view.ContainerContractViewsUiTest;У нового договора вместо грида условий показана подсказка
+1.675;ru.fgk.ws.app.it.MhReferenceCostLookupIT;Строка без цены по справочнику учитывается стоимостью из акта
+1.675;ru.fgk.ws.app.diadoc.view.signing.DiadocSigningListViewTest;checkPacketGroupHeaderIsJoined()
+1.654;ru.fgk.ws.app.diadoc.service.CdiReclamationPacketParserServiceTest;parsePacket_wrongPacketType_reportsUnsupportedType()
+1.652;ru.fgk.ws.app.container.ContainerScenarioIT;Раздел работает целиком: справочники, контейнеры, ремонт, акт, запреты, журнал
+1.644;ru.fgk.ws.app.container.view.ContainerRvkFilterUiTest;Диапазон дат оставляет в освидетельствованиях только попавшие в него
+1.627;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;Связанные документы: подписание, отклонённые и подписанные — каждый своим текстом
+1.577;ru.fgk.ws.app.it.ReceiptCostReplayIT;Расхождение цены с документом — отметка с обеими стоимостями
+1.551;ru.fgk.ws.app.container.view.ContainerContractViewsUiTest;Формы новых договора, условия и акта открываются
+1.545;ru.fgk.ws.app.legal.caseone.view.CaseOneViewsUiTest;probeView_opens_andFillsPathFromSelectedRequest()
+1.544;ru.fgk.ws.app.da.view.repairclaim.RepairClaimListViewTest;displayView_success()
+1.521;ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT;parsePacket_multipleMh1Documents_aggregatesRowsAndNumbers()
+1.507;ru.fgk.ws.app.container.view.ContainerContractViewsUiTest;Списки договоров, гарантийных условий и актов открываются
+1.486;ru.fgk.ws.app.pt.view.ptrepairpacket.PtRepairPacketListViewFilterTest;packCheckedCodeFilterNarrowsRowsAndSupportsNotCheckedAndReset()
+1.482;ru.fgk.ws.app.it.DiadocViolationCheckReplayIT;Нарушения зеркала при включённых проверках пишутся в результат контроля
+1.459;ru.fgk.ws.app.container.view.ContainerRvkFilterUiTest;Условие по модели действует вместе с поиском и снимается сбросом панели
+1.424;ru.fgk.ws.app.diadoc.view.manualsync.DiadocManualSyncViewTest;fillRowsParsesValidUuidAndShowsInvalidUuidError()
+1.415;ru.fgk.ws.app.diadoc.service.PacketParserServiceTest;parsePacket_missingPacketWithExplicitType_keepsRequestedTypeInResult()
+1.410;ru.fgk.ws.app.da.view.dacontractagent.DaContractAgentListViewTest;displayView_success()
+1.403;ru.fgk.ws.app.da.view.repairclaim.RepairClaimNoSendListViewTest;displayView_success()
+1.378;ru.fgk.ws.app.container.view.ContainerSurveyViewsUiTest;Карточка контейнера открывается вместе с вкладкой освидетельствований
+1.361;ru.fgk.ws.app.container.view.ContainerContractViewsUiTest;Форма акта открывается вместе с составом контейнеров
+1.358;ru.fgk.ws.app.container.view.ContainerRegistryViewsUiTest;У нового контейнера открыто «Описание», остальные вкладки выключены
+1.350;ru.fgk.ws.app.it.DrOperRepairTr2ParserServiceIT;parsePacket_reprocess_doesNotDuplicateMhAndEquipment()
+1.323;ru.fgk.ws.app.it.PacketReplayIT;Плановый пакет: проверки применяются, лишних сообщений нет
+1.322;ru.fgk.ws.app.container.view.ContainerSurveyViewsUiTest;Формы нового и сохранённого освидетельствования открываются
+1.319;ru.fgk.ws.app.it.ReceiptCostReplayIT;Состояние из строки не подменяется: для другого состояния цены нет
+1.317;ru.fgk.ws.app.container.view.ContainerSurveyViewsUiTest;У освидетельствования без акта панели просмотра нет
+1.299;ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest;Ошибка календаря отклоняет сохранение и не оставляет правку в базе
+1.295;ru.fgk.ws.app.dr.view.drdiadocoperrepairpacket.DrDiadocOperRepairPacketVu23ListViewTest;showErrorTextIsEnabledOnlyForRowWithCheckText()
+1.286;ru.fgk.ws.app.repair.view.vrepairabdpvarch.VRepairAbdpvArchListViewTest;displayView_success()
+1.282;ru.fgk.ws.app.legal.techclaim.view.TechClaimDetailViewUiTest;Карточка открывается со всеми вкладками и подставляет недостающую строку ДЮ
+1.267;ru.fgk.ws.app.user.UserUiTest;test_createUser()
+1.254;ru.fgk.ws.app.nsi.view.vdepo.VDepoListViewTest;displayView_success()
+1.249;ru.fgk.ws.app.container.view.ContainerRegistryViewsUiTest;Карточка сохранённого контейнера открывается вместе с вкладками
+1.242;ru.fgk.ws.app.nsi.view.claimtermnorm.NsiClaimTermNormViewsUiTest;C2: карточка даёт вид претензии списком и сохраняет «Дату окончания»
+1.240;ru.fgk.ws.app.container.view.ContainerRepairViewsUiTest;Формы нового и сохранённого ремонта открываются
+1.237;ru.fgk.ws.app.container.view.ContainerContractViewsUiTest;Карточка договора открывается вместе с гридом его условий
+1.213;ru.fgk.ws.app.container.view.ContainerRegistryViewsUiTest;Формы характеристики и файла открываются на новой записи
+1.205;ru.fgk.ws.app.legal.caseone.view.CaseOneViewsUiTest;probeView_executeButtonFollowsSettingsState()
+1.205;ru.fgk.ws.app.container.view.ContainerRepairViewsUiTest;Карточка контейнера открывается вместе с вкладками ремонтов и актов
+1.187;ru.fgk.ws.app.nsi.view.claimtermnorm.NsiClaimTermNormViewsUiTest;C2: фильтр по виду претензии отбирает строки «повр»
+1.186;ru.fgk.ws.app.container.view.fragment.EntityLogFragmentUiTest;Фрагмент показывает историю только названного экземпляра, новее сверху
+1.164;ru.fgk.ws.app.container.view.ContainerRegistryViewsUiTest;Реестр контейнеров открывается
+1.158;ru.fgk.ws.app.container.view.ContainerSurveyViewsUiTest;Список освидетельствований открывается
+1.152;ru.fgk.ws.app.container.view.fragment.EntityLogFragmentUiTest;Экран журнала изменений выведен в меню
+1.146;ru.fgk.ws.app.container.view.ContainerRepairViewsUiTest;Форма ремонта открывается на первой из пяти вкладок, без файла просмотра нет
+1.144;ru.fgk.ws.app.container.view.fragment.EntityLogFragmentUiTest;Без заданного экземпляра фрагмент пуст и не падает
+1.122;ru.fgk.ws.app.container.view.ContainerRepairViewsUiTest;Ремонт без даты браковки не сохраняется и возвращает на вкладку с этим полем
+1.102;ru.fgk.ws.app.nsi.view.claimtermnorm.NsiClaimTermNormViewsUiTest;C2: список открывается, вид претензии показан текстом, подписи колонок по ВагТК
+1.091;ru.fgk.ws.app.legal.caseone.view.CaseOneViewsUiTest;settingsView_opens_andHidesStoredPassword()
