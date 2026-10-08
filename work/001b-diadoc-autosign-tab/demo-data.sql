@@ -66,7 +66,7 @@ values (gen_random_uuid(), 'a5170000-0000-0000-0000-000000000003',
         'a5170000-0000-0000-0000-000000000003');
 
 -- Строки проверки (наработка) для 02–07; 01 нарабатывается через /api/diadoc/processPacket.
-insert into packet_check (source_type, source_key, packet_type, status, items, checked_at)
+insert into packet_check (source_type, message_id, packet_type, status, items, checked_at)
 select 'DIADOC',
        ('a5170000-0000-0000-0000-0000000000' || nn)::uuid,
        case when nn = '07' then 'removed_parts' else 'vu23' end,
